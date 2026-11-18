@@ -17,6 +17,7 @@ import {
   Radio,
   Images,
   IdCard,
+  Repeat,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -28,6 +29,7 @@ const ICONS = {
   Minimize2,
   Scissors,
   Film,
+  Repeat,
   VolumeX,
   AudioLines,
   Radio,

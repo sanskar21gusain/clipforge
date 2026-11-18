@@ -10,6 +10,7 @@ import { AudioCutterTool } from './AudioCutterTool';
 import { AudioToVideoTool } from './AudioToVideoTool';
 import { ImageStudioTool } from './ImageStudioTool';
 import { PassportPhotoTool } from './PassportPhotoTool';
+import { VideoConverterTool } from './VideoConverterTool';
 
 export function ToolRenderer({ slug }) {
   switch (slug) {
@@ -21,6 +22,8 @@ export function ToolRenderer({ slug }) {
       return <TrimVideoTool />;
     case 'mp4-to-gif':
       return <Mp4ToGifTool />;
+    case 'video-converter':
+      return <VideoConverterTool />;
     case 'extract-audio':
       return <ExtractAudioTool />;
     case 'audio-cutter':

@@ -18,6 +18,7 @@ import {
   Radio,
   Images,
   IdCard,
+  Repeat,
   Sparkles,
   Check,
 } from 'lucide-react';
@@ -29,6 +30,7 @@ const ICONS = {
   Minimize2,
   Scissors,
   Film,
+  Repeat,
   VolumeX,
   AudioLines,
   Radio,
@@ -97,7 +99,7 @@ export function HomeDirectory() {
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5">
-              {[{ id: 'all', label: 'All (9)' }, ...TOOL_CATEGORIES].map((cat) => (
+              {[{ id: 'all', label: `All (${TOOLS.length})` }, ...TOOL_CATEGORIES].map((cat) => (
                 <button
                   key={cat.id}
                   type="button"

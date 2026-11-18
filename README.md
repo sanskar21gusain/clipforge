@@ -9,6 +9,7 @@ All media processing runs locally inside the user's browser tab with zero server
 - **Compress Video to Size** (`/tools/compress-video`) — Target 8MB Discord, 16MB WhatsApp, 25MB Email, or custom MB via FFmpeg.wasm.
 - **Video Trimmer & Cutter** (`/tools/trim-video`) — Instant lossless stream-copy (`-c copy`) or frame-accurate H.264 re-encoding.
 - **MP4 to Animated GIF** (`/tools/mp4-to-gif`) — Two-pass custom palette (`palettegen`/`paletteuse`) GIF converter.
+- **MOV & WebM to MP4 Converter** (`/tools/video-converter`) — Convert MOV/WebM/MKV to universal H.264 MP4 with 9:16, 1:1, and 16:9 social presets.
 - **Extract or Mute Audio** (`/tools/extract-audio`) — Extract 192 kbps MP3 / lossless WAV or mute videos without re-encoding.
 - **Audio Cutter & Volume Booster** (`/tools/audio-cutter`) — Live waveform scrubber, fade-in/out, volume boost up to 300%, MP3/WAV export.
 - **Audio to Waveform Video** (`/tools/audio-to-video`) — Real-time animated audiogram video (`16:9`, `1:1`, `9:16`).

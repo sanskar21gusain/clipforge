@@ -89,6 +89,27 @@ export const TOOLS = [
     ],
   },
   {
+    slug: 'video-converter',
+    name: 'MOV & WebM to MP4 Converter',
+    shortName: 'MOV/WebM to MP4',
+    category: 'video',
+    badge: 'Social',
+    icon: 'Repeat',
+    tagline: 'Convert iPhone MOV, Chrome WebM, or MKV videos into universal H.264 MP4 with 9:16, 1:1 & 16:9 social presets.',
+    seoTitle: 'Free MOV & WebM to MP4 Converter + 9:16 Social Resizer | ClipForge',
+    seoDescription: 'Convert MOV, WebM, and MKV videos to universal H.264 MP4 and resize for Reels (9:16), Square (1:1), or YouTube (16:9) locally in your browser.',
+    privacyNote: 'H.264 MP4 conversion and social framing run locally via FFmpeg WebAssembly.',
+    steps: [
+      { title: 'Drop your MOV, WebM, or MKV clip', body: 'Select any screen recording, iPhone clip, or web video directly from your device.' },
+      { title: 'Choose social aspect ratio & fit', body: 'Keep the original aspect ratio or reframe cleanly to 9:16 Reels, 1:1 Square, or 16:9 Landscape.' },
+      { title: 'Convert & export MP4', body: 'Download a fast-start H.264/AAC MP4 ready for WhatsApp, Discord, Instagram, and Windows.' },
+    ],
+    faqs: [
+      { q: 'Why do iPhone MOV and Chrome WebM files fail to upload on some sites?', a: 'Many web forms and apps only accept H.264/AAC MP4 with yuv420p pixel format. ClipForge re-encodes your clip locally into that universal standard.' },
+      { q: 'What is included in 720p Free vs 1080p Pro?', a: '720p HD conversion and all social aspect presets are free with no watermarks; ClipForge Pro Annual unlocks 1080p Full HD high-bitrate output.' },
+    ],
+  },
+  {
     slug: 'extract-audio',
     name: 'Extract or Mute Audio',
     shortName: 'Extract / Mute Audio',
