@@ -1,18 +1,44 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { CheckCircle2, X } from 'lucide-react';
 import { ProModal } from './ProModal';
 
 const StudioContext = createContext(null);
+const MAX_HANDOFF_BYTES = 250 * 1024 * 1024; // 250 MB safe browser memory cap
+
+function matchesExpectedType(file, expectedType) {
+  if (!expectedType) return true;
+  const mime = (file?.type || '').toLowerCase();
+  const name = (file?.name || '').toLowerCase();
+  if (mime.startsWith(`${expectedType}/`)) return true;
+  if (expectedType === 'image' && /\.(png|jpe?g|webp|gif|bmp|avif)$/.test(name)) return true;
+  if (expectedType === 'video' && /\.(mp4|mov|webm|mkv|avi|m4v)$/.test(name)) return true;
+  if (expectedType === 'audio' && /\.(mp3|wav|m4a|ogg|flac|aac|opus)$/.test(name)) return true;
+  return false;
+}
 
 export function StudioProvider({ children }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [isPro, setIsPro] = useState(false);
   const [proModalOpen, setProModalOpen] = useState(false);
   const [proReason, setProReason] = useState(null);
   const [proOpenKeyForm, setProOpenKeyForm] = useState(false);
   const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
+  const handoffRef = useRef(null);
+
+  // Cancel any unconsumed handoff if the user navigates away to a different route
+  useEffect(() => {
+    const pending = handoffRef.current;
+    if (pending && pathname && pathname !== `/tools/${pending.targetSlug}`) {
+      if (Date.now() - pending.createdAt > 1500) {
+        handoffRef.current = null;
+      }
+    }
+  }, [pathname]);
 
   const showToast = useCallback((message, durationMs = 8000) => {
     setToast(message);
@@ -86,6 +112,57 @@ export function StudioProvider({ children }) {
     } catch (_) {}
   }, []);
 
+  const sendFileToTool = useCallback(
+    ({ blob, filename, mimeType, targetSlug, expectedType, sourceLabel }) => {
+      if (!blob || !targetSlug) {
+        showToast('No exported file is ready to send yet.', 4000);
+        return false;
+      }
+      if (blob.size > MAX_HANDOFF_BYTES) {
+        showToast(
+          'This file is over 250 MB — please download it first and open it directly in the next tool.',
+          6000
+        );
+        return false;
+      }
+      const file =
+        blob instanceof File
+          ? blob
+          : new File([blob], filename || 'clipforge-output', {
+              type: mimeType || blob.type || 'application/octet-stream',
+            });
+
+      if (!matchesExpectedType(file, expectedType)) {
+        showToast(`Cannot send this file type to ${targetSlug}.`, 5000);
+        return false;
+      }
+
+      handoffRef.current = {
+        file,
+        targetSlug,
+        expectedType,
+        sourceLabel: sourceLabel || 'ClipForge',
+        createdAt: Date.now(),
+      };
+      router.push(`/tools/${targetSlug}`);
+      return true;
+    },
+    [router, showToast]
+  );
+
+  const consumeHandoff = useCallback((targetSlug, expectedType) => {
+    const pending = handoffRef.current;
+    if (!pending) return null;
+    if (pending.targetSlug !== targetSlug) return null;
+    handoffRef.current = null;
+    if (!matchesExpectedType(pending.file, expectedType)) return null;
+    return pending;
+  }, []);
+
+  const cancelHandoff = useCallback(() => {
+    handoffRef.current = null;
+  }, []);
+
   return (
     <StudioContext.Provider
       value={{
@@ -95,6 +172,9 @@ export function StudioProvider({ children }) {
         activatePro,
         deactivatePro,
         showToast,
+        sendFileToTool,
+        consumeHandoff,
+        cancelHandoff,
       }}
     >
       {children}

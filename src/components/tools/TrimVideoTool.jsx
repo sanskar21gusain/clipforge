@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Scissors, Download, Loader2, RefreshCw, Zap, Target } from 'lucide-react';
+import { Scissors, Download, Loader2, RefreshCw, Zap, Target, ArrowRight } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
+import { useStudio } from '../StudioProvider';
 
 export function TrimVideoTool() {
+  const { sendFileToTool } = useStudio();
   const videoRef = useRef(null);
   const [file, setFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
@@ -124,7 +126,8 @@ export function TrimVideoTool() {
           src={videoUrl}
           controls
           onLoadedMetadata={(e) => {
-            const d = e.currentTarget.duration || 0;
+            const raw = e.currentTarget.duration;
+            const d = Number.isFinite(raw) && raw > 0 ? raw : 10;
             setDuration(d);
             setStart(0);
             setEnd(Number(d.toFixed(1)));
@@ -269,14 +272,50 @@ export function TrimVideoTool() {
           </button>
 
           {outputBlob && (
-            <button
-              type="button"
-              onClick={() => downloadBlob(outputBlob, `${baseName(file.name)}-trimmed.${outputExt}`)}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm cursor-pointer"
-            >
-              <Download size={15} />
-              <span>Download ({formatBytes(outputBlob.size)})</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => downloadBlob(outputBlob, `${baseName(file.name)}-trimmed.${outputExt}`)}
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm cursor-pointer"
+              >
+                <Download size={15} />
+                <span>Download ({formatBytes(outputBlob.size)})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  sendFileToTool({
+                    blob: outputBlob,
+                    filename: `${baseName(file.name)}-trimmed.${outputExt}`,
+                    mimeType: outputExt === 'webm' ? 'video/webm' : 'video/mp4',
+                    targetSlug: 'compress-video',
+                    expectedType: 'video',
+                    sourceLabel: 'Video Trimmer',
+                  })
+                }
+                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-blue-700 cursor-pointer"
+              >
+                <span>Compress</span>
+                <ArrowRight size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  sendFileToTool({
+                    blob: outputBlob,
+                    filename: `${baseName(file.name)}-trimmed.${outputExt}`,
+                    mimeType: outputExt === 'webm' ? 'video/webm' : 'video/mp4',
+                    targetSlug: 'mp4-to-gif',
+                    expectedType: 'video',
+                    sourceLabel: 'Video Trimmer',
+                  })
+                }
+                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-xs font-bold text-blue-700 cursor-pointer"
+              >
+                <span>To GIF</span>
+                <ArrowRight size={14} />
+              </button>
+            </>
           )}
         </div>
       </div>

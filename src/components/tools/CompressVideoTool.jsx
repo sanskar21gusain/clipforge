@@ -5,6 +5,7 @@ import { Download, Loader2, RefreshCw, Minimize2, CheckCircle2 } from 'lucide-re
 import { Dropzone } from '../Dropzone';
 import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
+import { useStudio } from '../StudioProvider';
 
 const PRESETS = [
   { id: 'discord', label: 'Discord (8 MB)', mb: 8 },
@@ -14,7 +15,9 @@ const PRESETS = [
 ];
 
 export function CompressVideoTool() {
+  const { consumeHandoff } = useStudio();
   const [file, setFile] = useState(null);
+  const [handoffSource, setHandoffSource] = useState('');
   const [videoUrl, setVideoUrl] = useState(null);
   const [duration, setDuration] = useState(0);
   const [preset, setPreset] = useState('discord');
@@ -24,6 +27,18 @@ export function CompressVideoTool() {
   const [status, setStatus] = useState('');
   const [outputBlob, setOutputBlob] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const incoming = consumeHandoff('compress-video', 'video');
+    if (incoming?.file) {
+      setHandoffSource(incoming.sourceLabel || 'ClipForge');
+      setFile(incoming.file);
+      setVideoUrl(URL.createObjectURL(incoming.file));
+      setOutputBlob(null);
+      setError('');
+      setProgress(0);
+    }
+  }, [consumeHandoff]);
 
   useEffect(() => {
     return () => {
@@ -62,7 +77,7 @@ export function CompressVideoTool() {
 
       await ffmpeg.writeFile(inputName, await fileToUint8Array(file));
 
-      const dur = Math.max(1, duration || 15);
+      const dur = Number.isFinite(duration) && duration > 0 ? Math.max(1, duration) : 15;
       const safeMb = Number.isFinite(targetMb) ? Math.min(500, Math.max(1, targetMb)) : 8;
       // Target total kilobits with 12% container headroom
       const totalKbps = Math.floor(((safeMb * 0.88) * 8192) / dur);
@@ -134,6 +149,7 @@ export function CompressVideoTool() {
           onClick={() => {
             setFile(null);
             setOutputBlob(null);
+            setHandoffSource('');
           }}
           className="inline-flex items-center gap-1.5 rounded-xl border border-canvas-300 bg-white hover:bg-canvas-200 px-3 py-1.5 text-xs font-semibold text-ink-700 cursor-pointer"
         >
@@ -142,12 +158,21 @@ export function CompressVideoTool() {
         </button>
       </div>
 
+      {handoffSource && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800">
+          Loaded directly from {handoffSource} (in-memory)
+        </div>
+      )}
+
       {/* Preview Player */}
       <div className="overflow-hidden rounded-2xl border border-canvas-300 bg-ink-950 flex justify-center">
         <video
           src={videoUrl}
           controls
-          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+          onLoadedMetadata={(e) => {
+            const raw = e.currentTarget.duration;
+            setDuration(Number.isFinite(raw) && raw > 0 ? raw : 0);
+          }}
           className="max-h-[340px] w-full object-contain"
         />
       </div>

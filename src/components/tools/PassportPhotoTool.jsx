@@ -21,9 +21,10 @@ const BG_TINTS = [
 ];
 
 export function PassportPhotoTool() {
-  const { isPro, openProModal } = useStudio();
+  const { isPro, openProModal, consumeHandoff } = useStudio();
   const previewCanvasRef = useRef(null);
   const [imgObj, setImgObj] = useState(null);
+  const [handoffSource, setHandoffSource] = useState('');
   const [country, setCountry] = useState(COUNTRIES[0]);
   const [bgTint, setBgTint] = useState(BG_TINTS[0]);
   const [zoom, setZoom] = useState(1.1);
@@ -36,10 +37,15 @@ export function PassportPhotoTool() {
   const copyTimerRef = useRef(null);
 
   useEffect(() => {
+    const incoming = consumeHandoff('passport-photo', 'image');
+    if (incoming?.file) {
+      setHandoffSource(incoming.sourceLabel || 'ClipForge');
+      handleFiles([incoming.file]);
+    }
     return () => {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
     };
-  }, []);
+  }, [consumeHandoff]);
 
   const handleFiles = (files) => {
     const f = files[0];
@@ -202,13 +208,22 @@ export function PassportPhotoTool() {
           </span>
           <button
             type="button"
-            onClick={() => setImgObj(null)}
+            onClick={() => {
+              setImgObj(null);
+              setHandoffSource('');
+            }}
             className="inline-flex items-center gap-1 text-xs font-semibold text-ink-600 hover:text-ink-900 cursor-pointer"
           >
             <RefreshCw size={12} />
             <span>New Photo</span>
           </button>
         </div>
+
+        {handoffSource && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
+            Loaded directly from {handoffSource} (in-memory)
+          </div>
+        )}
 
         <div className="flex flex-col gap-1.5">
           {COUNTRIES.map((c) => (

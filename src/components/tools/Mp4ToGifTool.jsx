@@ -5,9 +5,12 @@ import { Film, Download, Loader2, RefreshCw } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
+import { useStudio } from '../StudioProvider';
 
 export function Mp4ToGifTool() {
+  const { consumeHandoff } = useStudio();
   const [file, setFile] = useState(null);
+  const [handoffSource, setHandoffSource] = useState('');
   const [videoUrl, setVideoUrl] = useState(null);
   const [duration, setDuration] = useState(0);
   const [start, setStart] = useState(0);
@@ -19,6 +22,18 @@ export function Mp4ToGifTool() {
   const [gifBlob, setGifBlob] = useState(null);
   const [gifUrl, setGifUrl] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const incoming = consumeHandoff('mp4-to-gif', 'video');
+    if (incoming?.file) {
+      setHandoffSource(incoming.sourceLabel || 'ClipForge');
+      setFile(incoming.file);
+      setVideoUrl(URL.createObjectURL(incoming.file));
+      setGifBlob(null);
+      setGifUrl(null);
+      setError('');
+    }
+  }, [consumeHandoff]);
 
   useEffect(() => {
     return () => {
@@ -113,6 +128,7 @@ export function Mp4ToGifTool() {
           onClick={() => {
             setFile(null);
             setGifBlob(null);
+            setHandoffSource('');
           }}
           className="inline-flex items-center gap-1.5 rounded-xl border border-canvas-300 bg-white hover:bg-canvas-200 px-3 py-1.5 text-xs font-semibold text-ink-700 cursor-pointer"
         >
@@ -121,13 +137,20 @@ export function Mp4ToGifTool() {
         </button>
       </div>
 
+      {handoffSource && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800">
+          Loaded directly from {handoffSource} (in-memory)
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <div className="overflow-hidden rounded-2xl border border-canvas-300 bg-ink-950 flex items-center justify-center">
           <video
             src={videoUrl}
             controls
             onLoadedMetadata={(e) => {
-              const d = e.currentTarget.duration || 5;
+              const raw = e.currentTarget.duration;
+              const d = Number.isFinite(raw) && raw > 0 ? raw : 5;
               setDuration(d);
               setLengthSec(Math.min(6, Math.max(1, Math.floor(d))));
             }}

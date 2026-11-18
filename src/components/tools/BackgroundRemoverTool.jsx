@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Download, RefreshCw, Loader2, Check, Copy } from 'lucide-react';
+import { Download, RefreshCw, Loader2, Check, Copy, ArrowRight } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { downloadBlob, formatBytes, baseName } from '../../lib/format';
 import { copyImageBlobToClipboard } from '../../lib/clipboard';
+import { useStudio } from '../StudioProvider';
 
 const BACKDROPS = [
   { id: 'transparent', label: 'Transparent', className: 'bg-checkerboard', fill: null },
@@ -14,6 +15,7 @@ const BACKDROPS = [
 ];
 
 export function BackgroundRemoverTool() {
+  const { sendFileToTool } = useStudio();
   const runIdRef = useRef(0);
   const [sourceFile, setSourceFile] = useState(null);
   const [sourceUrl, setSourceUrl] = useState(null);
@@ -135,6 +137,24 @@ export function BackgroundRemoverTool() {
     }
   };
 
+  const handleSendToPassport = async () => {
+    if (!resultBlob || !sourceFile) return;
+    try {
+      const outBlob = await buildExportBlob();
+      if (!outBlob) return;
+      sendFileToTool({
+        blob: outBlob,
+        filename: `${baseName(sourceFile.name)}-cutout.png`,
+        mimeType: 'image/png',
+        targetSlug: 'passport-photo',
+        expectedType: 'image',
+        sourceLabel: 'AI Background Remover',
+      });
+    } catch (_) {
+      setError('Could not prepare image for Passport Photo Maker.');
+    }
+  };
+
   if (!sourceFile) {
     return (
       <Dropzone
@@ -253,6 +273,15 @@ export function BackgroundRemoverTool() {
             >
               {copied ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
               <span>{copied ? 'Copied!' : 'Copy PNG'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSendToPassport}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 px-3.5 py-2.5 text-sm font-bold text-blue-700 transition-colors cursor-pointer"
+            >
+              <span>Send to Passport Photo</span>
+              <ArrowRight size={15} />
             </button>
 
             <button
