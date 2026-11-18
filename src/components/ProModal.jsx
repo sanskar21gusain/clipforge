@@ -6,9 +6,18 @@ import { X, Check, Crown, ShieldCheck, KeyRound, ArrowRight, Sparkles } from 'lu
 const POLAR_ORG_ID = process.env.NEXT_PUBLIC_POLAR_ORG_ID || '';
 const POLAR_ANNUAL_PRODUCT_ID = process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID || '';
 
-export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, reason }) {
+export function ProModal({
+  isOpen,
+  onClose,
+  isPro,
+  onActivate,
+  onDeactivate,
+  reason,
+  initialShowKeyForm = false,
+}) {
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
+  const keyInputRef = useRef(null);
   const [showKeyForm, setShowKeyForm] = useState(false);
   const [licenseKey, setLicenseKey] = useState('');
   const [error, setError] = useState('');
@@ -28,11 +37,17 @@ export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, rea
     if (isOpen && !dialog.open) {
       setError('');
       setSuccessMsg('');
+      if (initialShowKeyForm) {
+        setShowKeyForm(true);
+      }
       dialog.showModal();
+      if (initialShowKeyForm) {
+        setTimeout(() => keyInputRef.current?.focus(), 0);
+      }
     } else if (!isOpen && dialog.open) {
       dialog.close();
     }
-  }, [isOpen]);
+  }, [isOpen, initialShowKeyForm]);
 
   // Sync React state when browser closes dialog (Esc, light-dismiss, form method="dialog")
   useEffect(() => {
@@ -157,6 +172,16 @@ export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, rea
 
       {/* Scrollable Body */}
       <div className="p-6 flex flex-col gap-5 overflow-y-auto">
+        {initialShowKeyForm && !isPro && (
+          <div
+            role="status"
+            data-testid="checkout-welcome-banner"
+            className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-semibold text-emerald-800"
+          >
+            Payment received! Check your Polar receipt email for your annual license key and paste it below.
+          </div>
+        )}
+
         {/* Annual-Only Pricing Card */}
         <div className="rounded-2xl border-2 border-blue-600/20 bg-blue-50/40 p-4 flex items-center justify-between gap-4">
           <div>
@@ -232,6 +257,7 @@ export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, rea
                 </label>
                 <div className="flex gap-2">
                   <input
+                    ref={keyInputRef}
                     id="clipforge-license-input"
                     type="text"
                     value={licenseKey}
