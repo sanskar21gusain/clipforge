@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Download, RefreshCw, Loader2, Sparkles, Check } from 'lucide-react';
+import { Download, RefreshCw, Loader2, Check, Copy } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { downloadBlob, formatBytes, baseName } from '../../lib/format';
+import { copyImageBlobToClipboard } from '../../lib/clipboard';
 
 const BACKDROPS = [
   { id: 'transparent', label: 'Transparent', className: 'bg-checkerboard', fill: null },
@@ -23,9 +24,13 @@ export function BackgroundRemoverTool() {
   const [processing, setProcessing] = useState(false);
   const [statusText, setStatusText] = useState('');
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [copyMsg, setCopyMsg] = useState('');
+  const copyTimerRef = useRef(null);
 
   useEffect(() => {
     return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
       if (sourceUrl) URL.revokeObjectURL(sourceUrl);
       if (resultUrl) URL.revokeObjectURL(resultUrl);
     };
@@ -79,14 +84,10 @@ export function BackgroundRemoverTool() {
     }
   };
 
-  const handleDownload = async () => {
-    if (!resultBlob || !sourceFile) return;
-    if (!backdrop.fill) {
-      downloadBlob(resultBlob, `${baseName(sourceFile.name)}-nobg.png`);
-      return;
-    }
+  const buildExportBlob = async () => {
+    if (!resultBlob || !resultUrl) return null;
+    if (!backdrop.fill) return resultBlob;
 
-    // Composite onto selected solid studio backdrop
     const img = new Image();
     await new Promise((resolve, reject) => {
       img.onload = resolve;
@@ -100,11 +101,38 @@ export function BackgroundRemoverTool() {
     ctx.fillStyle = backdrop.fill;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
-    canvas.toBlob((composited) => {
-      if (composited) {
-        downloadBlob(composited, `${baseName(sourceFile.name)}-${backdrop.id}.png`);
+    return new Promise((resolve) => canvas.toBlob((composited) => resolve(composited), 'image/png'));
+  };
+
+  const handleDownload = async () => {
+    if (!resultBlob || !sourceFile) return;
+    try {
+      const outBlob = await buildExportBlob();
+      if (outBlob) {
+        const suffix = backdrop.fill ? backdrop.id : 'nobg';
+        downloadBlob(outBlob, `${baseName(sourceFile.name)}-${suffix}.png`);
       }
-    }, 'image/png');
+    } catch (_) {
+      setError('Could not prepare PNG for download.');
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!resultBlob) return;
+    setCopyMsg('');
+    try {
+      const outBlob = await buildExportBlob();
+      const res = await copyImageBlobToClipboard(outBlob);
+      if (res.ok) {
+        setCopied(true);
+        if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+        copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+      } else {
+        setCopyMsg(res.reason);
+      }
+    } catch (_) {
+      setCopyMsg('Could not copy image to clipboard. Please use Download PNG instead.');
+    }
   };
 
   if (!sourceFile) {
@@ -217,14 +245,31 @@ export function BackgroundRemoverTool() {
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={handleDownload}
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors cursor-pointer"
-          >
-            <Download size={16} />
-            <span>Download PNG</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-canvas-300 bg-white hover:bg-canvas-100 px-4 py-2.5 text-sm font-bold text-ink-800 transition-colors cursor-pointer"
+            >
+              {copied ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
+              <span>{copied ? 'Copied!' : 'Copy PNG'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors cursor-pointer"
+            >
+              <Download size={16} />
+              <span>Download PNG</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {copyMsg && (
+        <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-semibold text-amber-800">
+          {copyMsg}
         </div>
       )}
     </div>

@@ -2,9 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Download, Grid2X2, RefreshCw, ZoomIn, Crown } from 'lucide-react';
+import { Download, Grid2X2, RefreshCw, ZoomIn, Crown, Copy, Check } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { downloadBlob } from '../../lib/format';
+import { copyImageBlobToClipboard } from '../../lib/clipboard';
 import { useStudio } from '../StudioProvider';
 
 const COUNTRIES = [
@@ -30,6 +31,15 @@ export function PassportPhotoTool() {
   const [offsetY, setOffsetY] = useState(0);
   const [showGuide, setShowGuide] = useState(true);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [copyMsg, setCopyMsg] = useState('');
+  const copyTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   const handleFiles = (files) => {
     const f = files[0];
@@ -100,6 +110,21 @@ export function PassportPhotoTool() {
     out.toBlob((blob) => {
       if (blob) downloadBlob(blob, `passport-photo-${country.id}-300dpi.jpg`);
     }, 'image/jpeg', 0.96);
+  };
+
+  const copySingle = async () => {
+    setCopyMsg('');
+    const out = document.createElement('canvas');
+    renderPhotoToCanvas(out, false);
+    const blob = await new Promise((resolve) => out.toBlob(resolve, 'image/png'));
+    const res = await copyImageBlobToClipboard(blob);
+    if (res.ok) {
+      setCopied(true);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    } else {
+      setCopyMsg(res.reason);
+    }
   };
 
   const exportPrintSheet = () => {
@@ -246,26 +271,41 @@ export function PassportPhotoTool() {
           </Link>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+        <div className="flex flex-wrap gap-2 pt-2">
           <button
             type="button"
             onClick={exportSingle}
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 px-4 text-xs font-bold text-white shadow-sm cursor-pointer"
+            className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 px-4 text-xs font-bold text-white shadow-sm cursor-pointer"
           >
             <Download size={14} />
-            <span>Download Single Photo</span>
+            <span>Download Single</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={copySingle}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-canvas-300 bg-white hover:bg-canvas-200 py-2.5 px-3.5 text-xs font-bold text-ink-800 cursor-pointer"
+          >
+            {copied ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+            <span>{copied ? 'Copied!' : 'Copy'}</span>
           </button>
 
           <button
             type="button"
             onClick={exportPrintSheet}
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-ink-900 hover:bg-ink-700 py-2.5 px-4 text-xs font-bold text-white cursor-pointer"
+            className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 rounded-xl bg-ink-900 hover:bg-ink-700 py-2.5 px-4 text-xs font-bold text-white cursor-pointer"
           >
             <Grid2X2 size={14} />
             <span>4×6 Print Sheet</span>
             {!isPro && <Crown size={12} className="text-amber-400" />}
           </button>
         </div>
+
+        {copyMsg && (
+          <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2 text-xs font-semibold text-amber-800">
+            {copyMsg}
+          </div>
+        )}
       </div>
     </div>
   );

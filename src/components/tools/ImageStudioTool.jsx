@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Download, Archive, RefreshCw, Loader2, Check, Crown, Images } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Download, Archive, RefreshCw, Loader2, Check, Crown, Images, Copy } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
+import { copyImageBlobToClipboard } from '../../lib/clipboard';
 import { useStudio } from '../StudioProvider';
 
 async function encodeCanvasToTargetKb(img, mime, maxWidth, exactKb, quality) {
@@ -73,6 +74,28 @@ export function ImageStudioTool() {
   const [targetKb, setTargetKb] = useState(100);
   const [maxWidth, setMaxWidth] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
+  const [copyMsg, setCopyMsg] = useState('');
+  const copyTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
+
+  const handleCopyItem = async (item) => {
+    if (!item?.outBlob) return;
+    setCopyMsg('');
+    const res = await copyImageBlobToClipboard(item.outBlob);
+    if (res.ok) {
+      setCopiedId(item.id);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
+    } else {
+      setCopyMsg(res.reason);
+    }
+  };
 
   const extFor = (m) => (m === 'image/png' ? 'png' : m === 'image/jpeg' ? 'jpg' : 'webp');
 
@@ -292,14 +315,24 @@ export function ImageStudioTool() {
                   </div>
 
                   {item.outBlob && (
-                    <button
-                      type="button"
-                      onClick={() => downloadBlob(item.outBlob, `${baseName(item.file.name)}.${item.outExt}`)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-canvas-300 bg-canvas-100 hover:bg-canvas-200 px-3 py-1.5 text-xs font-bold text-ink-800 cursor-pointer"
-                    >
-                      <Download size={13} />
-                      <span>Save .{item.outExt}</span>
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleCopyItem(item)}
+                        className="inline-flex items-center gap-1 rounded-lg border border-canvas-300 bg-white hover:bg-canvas-100 px-2.5 py-1.5 text-xs font-bold text-ink-700 cursor-pointer"
+                      >
+                        {copiedId === item.id ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                        <span>{copiedId === item.id ? 'Copied' : 'Copy'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => downloadBlob(item.outBlob, `${baseName(item.file.name)}.${item.outExt}`)}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-canvas-300 bg-canvas-100 hover:bg-canvas-200 px-3 py-1.5 text-xs font-bold text-ink-800 cursor-pointer"
+                      >
+                        <Download size={13} />
+                        <span>Save .{item.outExt}</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               );
@@ -307,6 +340,11 @@ export function ImageStudioTool() {
           </div>
 
           {/* Actions */}
+          {copyMsg && (
+            <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-semibold text-amber-800">
+              {copyMsg}
+            </div>
+          )}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <button
               type="button"
