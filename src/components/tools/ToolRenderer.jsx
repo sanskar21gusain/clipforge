@@ -14,6 +14,7 @@ import { VideoConverterTool } from './VideoConverterTool';
 import { BlurRedactTool } from './BlurRedactTool';
 import { VideoFramesTool } from './VideoFramesTool';
 import { MergeVideosTool } from './MergeVideosTool';
+import { VideoSpeedTool } from './VideoSpeedTool';
 
 export function ToolRenderer({ slug }) {
   switch (slug) {
@@ -31,6 +32,8 @@ export function ToolRenderer({ slug }) {
       return <VideoFramesTool />;
     case 'merge-videos':
       return <MergeVideosTool />;
+    case 'video-speed':
+      return <VideoSpeedTool />;
     case 'extract-audio':
       return <ExtractAudioTool />;
     case 'audio-cutter':

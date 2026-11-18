@@ -151,6 +151,26 @@ export const TOOLS = [
     ],
   },
   {
+    slug: 'video-speed',
+    name: 'Video Speed & Reverse',
+    shortName: 'Speed & Reverse',
+    category: 'video',
+    badge: 'Creator',
+    icon: 'Gauge',
+    tagline: 'Speed up videos into 2×–4× timelapses, slow down to 0.25× slow-motion, or reverse playback right in your browser.',
+    seoTitle: 'Free Online Video Speed Changer (0.25x–4x) & Reverse | ClipForge',
+    seoDescription: 'Change video playback speed from 0.25x slow-motion to 4x timelapse or reverse video and audio locally in your browser with FFmpeg WebAssembly.',
+    privacyNote: 'Speed scaling and frame reversal execute locally via FFmpeg WebAssembly—zero cloud uploads.',
+    steps: [
+      { title: 'Select a video clip', body: 'Drop any MP4, MOV, or WebM clip directly from your device.' },
+      { title: 'Choose speed & reverse options', body: 'Pick 0.25× slow-mo up to 4× timelapse, and optionally toggle Reverse or Mute Audio.' },
+      { title: 'Render & download MP4', body: 'ClipForge adjusts video timestamps and audio tempo in sync and exports a clean MP4.' },
+    ],
+    faqs: [
+      { q: 'Does audio stay synchronized when changing speed?', a: 'Yes. ClipForge chains FFmpeg atempo filters so speech and music stay in sync from 0.25× to 4× speed, or you can toggle Mute Audio.' },
+    ],
+  },
+  {
     slug: 'extract-audio',
     name: 'Extract or Mute Audio',
     shortName: 'Extract / Mute Audio',

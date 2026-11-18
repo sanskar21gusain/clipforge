@@ -12,6 +12,7 @@ All media processing runs locally inside the user's browser tab with zero server
 - **MOV & WebM to MP4 Converter** (`/tools/video-converter`) — Convert MOV/WebM/MKV to universal H.264 MP4 with 9:16, 1:1, and 16:9 social presets.
 - **Video Frame & Thumbnail Extractor** (`/tools/video-frames`) — Scrub to exact frame timestamps for instant full-res PNG export, plus Pro batch ZIP extraction.
 - **Merge & Join Videos** (`/tools/merge-videos`) — Reorder and stitch multiple video clips into one normalized MP4 (free for 2 clips, Pro unlocks 3+ clips & 1080p).
+- **Video Speed & Reverse** (`/tools/video-speed`) — Adjust playback speed (`0.25×` slow-motion to `4×` timelapse) or reverse video & audio locally.
 - **Extract or Mute Audio** (`/tools/extract-audio`) — Extract 192 kbps MP3 / lossless WAV or mute videos without re-encoding.
 - **Audio Cutter & Volume Booster** (`/tools/audio-cutter`) — Live waveform scrubber, fade-in/out, volume boost up to 300%, MP3/WAV export.
 - **Audio to Waveform Video** (`/tools/audio-to-video`) — Real-time animated audiogram video (`16:9`, `1:1`, `9:16`).
