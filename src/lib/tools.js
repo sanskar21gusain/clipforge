@@ -110,6 +110,26 @@ export const TOOLS = [
     ],
   },
   {
+    slug: 'video-frames',
+    name: 'Video Frame & Thumbnail Extractor',
+    shortName: 'Frame Extractor',
+    category: 'video',
+    badge: 'Instant',
+    icon: 'Camera',
+    tagline: 'Scrub to any millisecond of a video and export a full-resolution PNG frame—or batch extract frames as a ZIP.',
+    seoTitle: 'Free Video Frame & Thumbnail Extractor (Full-Res PNG) | ClipForge',
+    seoDescription: 'Extract full-resolution PNG thumbnails and still frames from MP4, MOV, or WebM videos right in your browser with millisecond scrubbing and batch ZIP export.',
+    privacyNote: 'Frame capture runs directly via HTML5 Video and Canvas with zero server uploads.',
+    steps: [
+      { title: 'Load your video clip', body: 'Drop any MP4, MOV, or WebM video directly from your device.' },
+      { title: 'Scrub to the exact frame', body: 'Use the precision slider or -0.1s / +0.1s nudge buttons to land on the exact moment.' },
+      { title: 'Download or copy full-res PNG', body: 'Save a single crisp PNG instantly, or use Pro Annual to batch extract frames every N seconds as a ZIP.' },
+    ],
+    faqs: [
+      { q: 'Does extracting a frame reduce the original video resolution?', a: 'No. ClipForge captures directly at the video’s native pixel width and height (e.g., 1920×1080 or 3840×2160) into a lossless PNG.' },
+    ],
+  },
+  {
     slug: 'extract-audio',
     name: 'Extract or Mute Audio',
     shortName: 'Extract / Mute Audio',

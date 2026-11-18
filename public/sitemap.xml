@@ -6,6 +6,7 @@
   <url><loc>https://clipforge.vercel.app/tools/trim-video</loc><priority>0.9</priority></url>
   <url><loc>https://clipforge.vercel.app/tools/mp4-to-gif</loc><priority>0.9</priority></url>
   <url><loc>https://clipforge.vercel.app/tools/video-converter</loc><priority>0.9</priority></url>
+  <url><loc>https://clipforge.vercel.app/tools/video-frames</loc><priority>0.9</priority></url>
   <url><loc>https://clipforge.vercel.app/tools/extract-audio</loc><priority>0.8</priority></url>
   <url><loc>https://clipforge.vercel.app/tools/audio-cutter</loc><priority>0.8</priority></url>
   <url><loc>https://clipforge.vercel.app/tools/audio-to-video</loc><priority>0.9</priority></url>

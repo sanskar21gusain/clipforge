@@ -10,6 +10,7 @@
 - [Video Trimmer & Cutter](https://clipforge.vercel.app/tools/trim-video): Instant lossless stream-copy or frame-accurate H.264 video cutting right in your browser.
 - [MP4 to Animated GIF](https://clipforge.vercel.app/tools/mp4-to-gif): Two-pass custom color palette GIF conversion with custom FPS and width.
 - [MOV & WebM to MP4 Converter](https://clipforge.vercel.app/tools/video-converter): Convert MOV, WebM, and MKV clips to universal H.264 MP4 with 9:16, 1:1, and 16:9 social presets.
+- [Video Frame & Thumbnail Extractor](https://clipforge.vercel.app/tools/video-frames): Scrub to exact timestamps and capture full-resolution PNG frames or batch extract frames every N seconds as ZIP.
 
 ## Audio Tools
 - [Extract or Mute Audio](https://clipforge.vercel.app/tools/extract-audio): Extract 192 kbps MP3 or lossless WAV audio from video, or strip audio losslessly.

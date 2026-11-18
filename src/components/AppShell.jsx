@@ -19,6 +19,7 @@ import {
   IdCard,
   Repeat,
   EyeOff,
+  Camera,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -31,6 +32,7 @@ const ICONS = {
   Scissors,
   Film,
   Repeat,
+  Camera,
   VolumeX,
   AudioLines,
   Radio,

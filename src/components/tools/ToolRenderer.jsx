@@ -12,6 +12,7 @@ import { ImageStudioTool } from './ImageStudioTool';
 import { PassportPhotoTool } from './PassportPhotoTool';
 import { VideoConverterTool } from './VideoConverterTool';
 import { BlurRedactTool } from './BlurRedactTool';
+import { VideoFramesTool } from './VideoFramesTool';
 
 export function ToolRenderer({ slug }) {
   switch (slug) {
@@ -25,6 +26,8 @@ export function ToolRenderer({ slug }) {
       return <Mp4ToGifTool />;
     case 'video-converter':
       return <VideoConverterTool />;
+    case 'video-frames':
+      return <VideoFramesTool />;
     case 'extract-audio':
       return <ExtractAudioTool />;
     case 'audio-cutter':
