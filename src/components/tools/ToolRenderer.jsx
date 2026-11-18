@@ -11,6 +11,7 @@ import { AudioToVideoTool } from './AudioToVideoTool';
 import { ImageStudioTool } from './ImageStudioTool';
 import { PassportPhotoTool } from './PassportPhotoTool';
 import { VideoConverterTool } from './VideoConverterTool';
+import { BlurRedactTool } from './BlurRedactTool';
 
 export function ToolRenderer({ slug }) {
   switch (slug) {
@@ -34,6 +35,8 @@ export function ToolRenderer({ slug }) {
       return <ImageStudioTool />;
     case 'passport-photo':
       return <PassportPhotoTool />;
+    case 'blur-redact':
+      return <BlurRedactTool />;
     default:
       return null;
   }

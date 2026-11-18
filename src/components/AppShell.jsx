@@ -18,6 +18,7 @@ import {
   Images,
   IdCard,
   Repeat,
+  EyeOff,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -35,6 +36,7 @@ const ICONS = {
   Radio,
   Images,
   IdCard,
+  EyeOff,
 };
 
 export function AppShell({ children }) {

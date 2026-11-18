@@ -15,6 +15,7 @@ All media processing runs locally inside the user's browser tab with zero server
 - **Audio to Waveform Video** (`/tools/audio-to-video`) — Real-time animated audiogram video (`16:9`, `1:1`, `9:16`).
 - **Image Studio & Compress to KB** (`/tools/image-studio`) — Batch JPG/PNG/WebP conversion, EXIF stripping, exact-KB binary search, ZIP download.
 - **Passport & ID Photo Maker** (`/tools/passport-photo`) — Official India/UK/EU, US, and Canada 300 DPI sizing + 4×6 printable sheet.
+- **Blur & Redact Photo** (`/tools/blur-redact`) — Irreversible Canvas blur, pixelate, and solid black-box redaction with EXIF/GPS stripped on export.
 
 ## Local Development
 

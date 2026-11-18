@@ -209,6 +209,27 @@ export const TOOLS = [
       { q: 'What resolution are the exported passport photos?', a: 'All photos and 4×6 sheets export at true 300 DPI print resolution so they look sharp at any photo lab or home printer.' },
     ],
   },
+  {
+    slug: 'blur-redact',
+    name: 'Blur & Redact Photo',
+    shortName: 'Blur & Redact',
+    category: 'photo',
+    badge: 'Privacy',
+    icon: 'EyeOff',
+    tagline: 'Permanently blur, pixelate, or black-box faces, license plates, emails, and API keys—flattened with EXIF/GPS stripped.',
+    seoTitle: 'Free Blur & Redact Photo Tool — Irreversible & EXIF-Free | ClipForge',
+    seoDescription: 'Blur, pixelate, or permanently black-box sensitive details in photos and screenshots right in your browser. Zero cloud uploads and automatic EXIF/GPS stripping.',
+    privacyNote: 'Redaction burns pixels permanently onto a fresh local canvas—zero server uploads and all EXIF/GPS metadata stripped.',
+    steps: [
+      { title: 'Drop or paste your photo', body: 'Open any screenshot, ID photo, or document image locally in your browser.' },
+      { title: 'Draw over sensitive regions', body: 'Choose Solid Black Box, Pixelate Mosaic, or Heavy Blur and drag rectangles over private details.' },
+      { title: 'Export flattened clean image', body: 'Download a clean PNG or JPG with redacted pixels permanently destroyed and all EXIF/GPS metadata removed.' },
+    ],
+    faqs: [
+      { q: 'Can someone undo the blur or black box in the exported file?', a: 'No. ClipForge bakes every redaction directly onto a flattened pixel canvas before encoding a brand-new PNG or JPG, permanently destroying the original pixel data inside each redacted region.' },
+      { q: 'Does exporting remove camera EXIF and GPS location data?', a: 'Yes. Re-encoding through HTML5 Canvas automatically strips all EXIF, camera model, timestamp, and GPS coordinates.' },
+    ],
+  },
 ];
 
 export function getToolBySlug(slug) {

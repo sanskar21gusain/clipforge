@@ -19,6 +19,7 @@ import {
   Images,
   IdCard,
   Repeat,
+  EyeOff,
   Sparkles,
   Check,
 } from 'lucide-react';
@@ -36,6 +37,7 @@ const ICONS = {
   Radio,
   Images,
   IdCard,
+  EyeOff,
 };
 
 export function HomeDirectory() {

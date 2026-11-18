@@ -20,6 +20,7 @@
 - [AI Background Remover](https://clipforge.vercel.app/tools/background-remover): On-device neural background removal with transparent PNG and studio backdrop export.
 - [Image Studio & Compress to KB](https://clipforge.vercel.app/tools/image-studio): Batch JPG/PNG/WebP conversion, EXIF/GPS stripping, exact-KB binary search compression (50KB/100KB/200KB), and ZIP download.
 - [Passport & ID Photo Maker](https://clipforge.vercel.app/tools/passport-photo): Official India/UK/EU, US, and Canada 300 DPI sizing with face alignment guide and 4x6 printable sheet.
+- [Blur & Redact Photo](https://clipforge.vercel.app/tools/blur-redact): Irreversible Canvas blur, pixelate, and solid black-box redaction with automatic EXIF/GPS metadata stripping.
 
 ## Pricing
 - Free Tier: Free on-device processing with zero cloud uploads.
