@@ -1,0 +1,199 @@
+export const TOOL_CATEGORIES = [
+  { id: 'video', label: 'Video Tools', accent: 'text-blue-600 bg-blue-50 border-blue-200' },
+  { id: 'audio', label: 'Audio Tools', accent: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
+  { id: 'photo', label: 'Photo Tools', accent: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+];
+
+export const TOOLS = [
+  {
+    slug: 'background-remover',
+    name: 'AI Background Remover',
+    shortName: 'Background Remover',
+    category: 'photo',
+    badge: 'Local AI',
+    icon: 'Eraser',
+    tagline: 'Remove photo backgrounds automatically right in your browser with on-device neural segmentation.',
+    seoTitle: 'Free AI Background Remover — 100% Local, No Upload | ClipForge',
+    seoDescription: 'Remove image backgrounds automatically using on-device AI directly in your browser. Zero uploads, no signup, instant transparent PNG download.',
+    privacyNote: 'Runs an on-device AI segmentation model in your browser. Your photos are never uploaded to any server.',
+    steps: [
+      { title: 'Drop or paste your photo', body: 'Upload any JPG, PNG, or WebP image—or paste directly from your clipboard with Ctrl+V.' },
+      { title: 'On-device AI removes the background', body: 'Our neural model runs locally inside your browser tab to separate the subject cleanly.' },
+      { title: 'Preview & export transparent PNG', body: 'Compare before and after, test white or gradient backdrops, and export a full-resolution PNG.' },
+    ],
+    faqs: [
+      { q: 'Are my photos uploaded to a cloud server?', a: 'Never. ClipForge downloads the AI model once into your browser cache and runs segmentation entirely on your device.' },
+      { q: 'Why does the first image take a few seconds longer?', a: 'The first run caches the on-device AI weights locally in your browser. Every image after that processes much faster.' },
+      { q: 'Can I use the exported PNGs commercially?', a: 'Yes—free exports have no watermarks, and ClipForge Pro Annual unlocks unlimited batch processing and priority speeds.' },
+    ],
+  },
+  {
+    slug: 'compress-video',
+    name: 'Compress Video to Size',
+    shortName: 'Compress Video',
+    category: 'video',
+    badge: 'Popular',
+    icon: 'Minimize2',
+    tagline: 'Shrink MP4, MOV, or WebM videos to fit exact size limits like 8MB Discord, 16MB WhatsApp, or 25MB Email.',
+    seoTitle: 'Compress Video to 10MB, 16MB or 25MB Free (No Upload) | ClipForge',
+    seoDescription: 'Compress MP4 and MOV videos to an exact target file size right in your browser using FFmpeg WebAssembly. Private, fast, and watermark-free.',
+    privacyNote: 'Powered by FFmpeg WebAssembly inside your browser tab. Zero video uploads.',
+    steps: [
+      { title: 'Choose your video file', body: 'Drag and drop an MP4, MOV, or WebM video from your computer.' },
+      { title: 'Pick a target file size', body: 'Select Discord (8MB), WhatsApp (16MB), Email (25MB), or type a custom MB target.' },
+      { title: 'Download compressed MP4', body: 'ClipForge calculates the optimal video bitrate automatically and exports a crisp H.264 MP4.' },
+    ],
+    faqs: [
+      { q: 'How does exact target size compression work?', a: 'ClipForge reads your video duration, reserves audio bitrate, and computes the exact video bitrate needed to land under your chosen megabyte limit.' },
+      { q: 'Does compressing degrade audio quality?', a: 'We preserve clean 96–128 kbps AAC audio so speech and music remain clear while reducing file size.' },
+    ],
+  },
+  {
+    slug: 'trim-video',
+    name: 'Video Trimmer & Cutter',
+    shortName: 'Trim Video',
+    category: 'video',
+    badge: 'Instant',
+    icon: 'Scissors',
+    tagline: 'Cut video clips with lossless instant stream-copy or frame-accurate H.264 re-encoding—100% locally.',
+    seoTitle: 'Free Online Video Trimmer — Lossless & Frame-Accurate | ClipForge',
+    seoDescription: 'Trim MP4, MOV, and WebM clips directly in your browser without uploading. Supports instant lossless cutting and accurate re-encoding.',
+    privacyNote: 'All cutting and remuxing happens locally on your CPU via WebAssembly.',
+    steps: [
+      { title: 'Load your clip', body: 'Drop any video file to inspect it in the interactive bright studio player.' },
+      { title: 'Set start & end points', body: 'Use the precision range controls or click "Set to Current Time" while scrubbing.' },
+      { title: 'Choose Fast or Accurate mode', body: 'Fast mode copies streams losslessly in under a second; Accurate mode re-encodes to exact frames.' },
+    ],
+    faqs: [
+      { q: 'What is the difference between Fast Copy and Accurate Cut?', a: 'Fast Copy (-c copy) cuts instantaneously with zero quality loss at nearest keyframes. Accurate Cut re-encodes so the clip starts on the exact millisecond you picked.' },
+    ],
+  },
+  {
+    slug: 'mp4-to-gif',
+    name: 'MP4 to Animated GIF',
+    shortName: 'MP4 to GIF',
+    category: 'video',
+    badge: 'Creator',
+    icon: 'Film',
+    tagline: 'Convert short video clips into sharp, color-accurate animated GIFs with custom FPS and width.',
+    seoTitle: 'MP4 to GIF Converter — High-Quality Palette, No Watermark | ClipForge',
+    seoDescription: 'Turn MP4 and MOV clips into crisp, lightweight animated GIFs right in your browser with two-pass color palette generation.',
+    privacyNote: 'Two-pass FFmpeg palette rendering happens entirely inside your browser.',
+    steps: [
+      { title: 'Select a video clip', body: 'Drop an MP4, MOV, or WebM recording.' },
+      { title: 'Tune clip range, FPS & width', body: 'Pick the exact seconds to convert, choose 10–24 FPS, and set width (360px–720px).' },
+      { title: 'Render sharp GIF', body: 'ClipForge builds a custom 256-color palette for smooth gradients and downloads your GIF immediately.' },
+    ],
+    faqs: [
+      { q: 'Why do these GIFs look sharper than normal converters?', a: 'ClipForge uses FFmpeg two-pass palettegen/paletteuse filters, generating a dedicated color table specifically for your clip.' },
+    ],
+  },
+  {
+    slug: 'extract-audio',
+    name: 'Extract or Mute Audio',
+    shortName: 'Extract / Mute Audio',
+    category: 'audio',
+    badge: 'Lossless',
+    icon: 'VolumeX',
+    tagline: 'Extract crisp MP3/WAV tracks from any video, or strip audio completely without re-encoding video.',
+    seoTitle: 'Extract Audio from Video (MP3/WAV) or Mute Video Free | ClipForge',
+    seoDescription: 'Extract MP3 or WAV audio from MP4/MOV videos or mute video files losslessly inside your browser with zero uploads.',
+    privacyNote: 'Audio extraction and video muting run 100% locally in your browser.',
+    steps: [
+      { title: 'Drop your video file', body: 'Load any MP4, MOV, MKV, or WebM video.' },
+      { title: 'Pick Extract MP3/WAV or Mute Video', body: 'Choose whether to save the audio track or remove sound from the video cleanly.' },
+      { title: 'Download instantly', body: 'Your audio file or silent MP4 downloads directly from memory.' },
+    ],
+    faqs: [
+      { q: 'Does muting a video reduce visual quality?', a: 'No. Mute mode copies the video stream directly (-c:v copy -an), preserving 100% original video quality.' },
+    ],
+  },
+  {
+    slug: 'audio-cutter',
+    name: 'Audio Cutter & Volume Booster',
+    shortName: 'Audio Cutter & Boost',
+    category: 'audio',
+    badge: 'Waveform',
+    icon: 'AudioLines',
+    tagline: 'Visual waveform editor to trim audio, add smooth fade-in/out, boost volume up to 300%, and export MP3 or WAV.',
+    seoTitle: 'Online Audio Cutter & Volume Booster with Waveform | ClipForge',
+    seoDescription: 'Trim MP3 and WAV audio visually with a live waveform, add fades, boost quiet recordings up to 300%, and export locally.',
+    privacyNote: 'Waveform decoding and audio processing stay 100% on your device.',
+    steps: [
+      { title: 'Upload an audio track', body: 'Supports MP3, WAV, M4A, OGG, and FLAC audio files.' },
+      { title: 'Trim, boost & add fades', body: 'Inspect the waveform, choose your start/end range, boost gain up to 300%, and toggle smooth fades.' },
+      { title: 'Export MP3 or WAV', body: 'Render and download your mastered clip immediately.' },
+    ],
+    faqs: [
+      { q: 'Will boosting volume cause harsh clipping?', a: 'ClipForge applies clean FFmpeg volume scaling with optional soft fades so voice clips and music stay crisp.' },
+    ],
+  },
+  {
+    slug: 'audio-to-video',
+    name: 'Audio to Waveform Video',
+    shortName: 'Audio to Video',
+    category: 'audio',
+    badge: 'Viral',
+    icon: 'Radio',
+    tagline: 'Turn podcasts, voice notes, or music snippets into bright animated waveform videos for Reels, Shorts & X.',
+    seoTitle: 'Audio to Waveform Video Maker for Reels, Shorts & Podcasts | ClipForge',
+    seoDescription: 'Convert MP3 or WAV audio into an animated audiogram video with custom titles, bright gradients, and 9:16, 1:1, or 16:9 aspect ratios.',
+    privacyNote: 'Real-time Canvas visualization and video capture run directly in your browser.',
+    steps: [
+      { title: 'Drop your audio clip', body: 'Upload any podcast highlight, voiceover, or music clip.' },
+      { title: 'Customize title, ratio & backdrop', body: 'Pick 16:9 Landscape, 1:1 Square, or 9:16 Vertical Reels, set your title, and choose a daylight gradient.' },
+      { title: 'Record & export video', body: 'Preview the live audio-reactive bars and export your video clip directly.' },
+    ],
+    faqs: [
+      { q: 'Which social platforms work best with these videos?', a: 'Use 9:16 for Instagram Reels, YouTube Shorts, and TikTok; 1:1 for LinkedIn and Instagram Feed; 16:9 for X/Twitter and YouTube.' },
+    ],
+  },
+  {
+    slug: 'image-studio',
+    name: 'Image Studio & Compress to KB',
+    shortName: 'Image Studio (KB)',
+    category: 'photo',
+    badge: 'Batch',
+    icon: 'Images',
+    tagline: 'Batch convert JPG/PNG/WebP, resize pixels, strip EXIF metadata, or hit exact file sizes like 50KB or 200KB.',
+    seoTitle: 'Compress Image to Exact KB (50KB, 100KB, 200KB) & Convert Free | ClipForge',
+    seoDescription: 'Batch compress images to exact KB targets, convert between JPG, PNG, and WebP, resize dimensions, and download as ZIP—100% private.',
+    privacyNote: 'HTML5 Canvas processes all images locally in memory. Zero cloud uploads.',
+    steps: [
+      { title: 'Drop one or multiple photos', body: 'Select a single photo or batch-drop dozens of JPG, PNG, or WebP files.' },
+      { title: 'Choose format, resize or exact KB target', body: 'Pick target format or turn on Exact KB mode (e.g., 50KB or 100KB) for strict upload forms.' },
+      { title: 'Download individually or as a ZIP', body: 'Export every optimized photo cleanly with EXIF/GPS metadata stripped automatically.' },
+    ],
+    faqs: [
+      { q: 'How does Exact KB compression hit 50KB or 100KB?', a: 'ClipForge runs a fast binary search across encoding quality and scaling until the resulting blob lands right under your target KB limit.' },
+    ],
+  },
+  {
+    slug: 'passport-photo',
+    name: 'Passport & ID Photo Maker',
+    shortName: 'Passport Photo',
+    category: 'photo',
+    badge: 'Print Sheet',
+    icon: 'IdCard',
+    tagline: 'Crop photos to official India, US, UK/EU, or Canada passport dimensions and generate a printable 4×6 photo sheet.',
+    seoTitle: 'Free Passport Photo Maker & 4x6 Print Sheet (India, US, UK, EU) | ClipForge',
+    seoDescription: 'Create official-size passport and visa photos with face alignment guides and downloadable 4x6 printable sheets right in your browser.',
+    privacyNote: 'Your identity photos never leave your browser—100% private on-device rendering.',
+    steps: [
+      { title: 'Upload a front-facing photo', body: 'Drop a clear portrait photo taken in even lighting.' },
+      { title: 'Select country & align face', body: 'Pick India (35×45mm), US (2×2 in), UK/EU (35×45mm), or Canada, then zoom and position inside the guide.' },
+      { title: 'Download single photo or 4×6 print sheet', body: 'Save a single high-DPI image for online portals or a 4×6 inch sheet tiled with 6–8 photos for printing.' },
+    ],
+    faqs: [
+      { q: 'What resolution are the exported passport photos?', a: 'All photos and 4×6 sheets export at true 300 DPI print resolution so they look sharp at any photo lab or home printer.' },
+    ],
+  },
+];
+
+export function getToolBySlug(slug) {
+  return TOOLS.find((t) => t.slug === slug) || null;
+}
+
+export function getToolsByCategory(categoryId) {
+  return TOOLS.filter((t) => t.category === categoryId);
+}
