@@ -19,6 +19,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://clipforge.vercel.app'),
   title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
   description:
     'Private, zero-upload browser studio for AI background removal, video compression to exact MB, lossless trimming, MP4 to GIF, audio waveform videos, exact-KB image compression, and passport photos.',
@@ -32,6 +33,20 @@ export const metadata = {
     'passport photo maker 4x6',
     'audio to waveform video',
   ],
+  openGraph: {
+    title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
+    description:
+      'Private, zero-upload browser studio for AI background removal, exact-MB video compression, lossless trimming, MP4 to GIF, waveform audiograms, exact-KB image optimization, and passport photos.',
+    url: 'https://clipforge.vercel.app',
+    siteName: 'ClipForge',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
+    description:
+      'Remove photo backgrounds with local AI, compress videos to exact MB, trim clips losslessly, and build 4x6 passport sheets right in your browser.',
+  },
   robots: { index: true, follow: true },
   icons: { icon: '/favicon.svg' },
 };

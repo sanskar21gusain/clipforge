@@ -1,16 +1,24 @@
-# ClipForge — 100% On-Device Video, Audio & Photo Studio
+# ClipForge — Free On-Device Video, Audio & Photo Studio
+
 > ClipForge is a bright, privacy-first browser media studio that runs video, audio, and photo tools locally inside the browser using FFmpeg WebAssembly, Web Audio API, HTML5 Canvas, and on-device ONNX AI models. No file uploads, no mandatory sign-up.
 
-## Tools Available
-- AI Background Remover (`/tools/background-remover`): On-device neural background removal with transparent PNG & solid backdrop export.
-- Compress Video to Size (`/tools/compress-video`): Target exact MB limits (8MB Discord, 16MB WhatsApp, 25MB Email, Custom MB) locally via FFmpeg.wasm.
-- Video Trimmer (`/tools/trim-video`): Instant lossless stream-copy or frame-accurate H.264 video cutting.
-- MP4 to GIF (`/tools/mp4-to-gif`): Two-pass custom color palette GIF conversion with custom FPS and width.
-- Extract / Mute Audio (`/tools/extract-audio`): Extract MP3/WAV from video or losslessly strip audio track.
-- Audio Cutter & Volume Booster (`/tools/audio-cutter`): Live waveform scrubber, smooth fade-in/out, volume boost up to 300%.
-- Audio to Waveform Video (`/tools/audio-to-video`): Animated audiogram generator for Reels (9:16), Square (1:1), and Landscape (16:9).
-- Image Studio & Exact KB Compressor (`/tools/image-studio`): Batch JPG/PNG/WebP conversion, EXIF removal, exact KB binary-search compression, ZIP download.
-- Passport & ID Photo Maker (`/tools/passport-photo`): Official India, US, UK/EU & Canada 300 DPI sizing with face alignment guide and 4x6 printable sheet.
+## Studio Directory
+- [ClipForge Home — All 9 Browser Media Tools](https://clipforge.vercel.app/): Browse and search all video, audio, and photo tools.
+
+## Video Tools
+- [Compress Video to Size](https://clipforge.vercel.app/tools/compress-video): Shrink MP4, MOV, or WebM videos to exact MB targets (8MB Discord, 16MB WhatsApp, 25MB Email, Custom MB) locally via FFmpeg.wasm.
+- [Video Trimmer & Cutter](https://clipforge.vercel.app/tools/trim-video): Instant lossless stream-copy or frame-accurate H.264 video cutting right in your browser.
+- [MP4 to Animated GIF](https://clipforge.vercel.app/tools/mp4-to-gif): Two-pass custom color palette GIF conversion with custom FPS and width.
+
+## Audio Tools
+- [Extract or Mute Audio](https://clipforge.vercel.app/tools/extract-audio): Extract 192 kbps MP3 or lossless WAV audio from video, or strip audio losslessly.
+- [Audio Cutter & Volume Booster](https://clipforge.vercel.app/tools/audio-cutter): Live waveform scrubber, smooth fade-in/out, volume boost up to 300%, MP3/WAV export.
+- [Audio to Waveform Video](https://clipforge.vercel.app/tools/audio-to-video): Animated audiogram video generator for Reels (9:16), Square (1:1), and Landscape (16:9).
+
+## Photo Tools
+- [AI Background Remover](https://clipforge.vercel.app/tools/background-remover): On-device neural background removal with transparent PNG and studio backdrop export.
+- [Image Studio & Compress to KB](https://clipforge.vercel.app/tools/image-studio): Batch JPG/PNG/WebP conversion, EXIF/GPS stripping, exact-KB binary search compression (50KB/100KB/200KB), and ZIP download.
+- [Passport & ID Photo Maker](https://clipforge.vercel.app/tools/passport-photo): Official India/UK/EU, US, and Canada 300 DPI sizing with face alignment guide and 4x6 printable sheet.
 
 ## Pricing
 - Free Tier: Free on-device processing with zero cloud uploads.

@@ -8,17 +8,26 @@ const POLAR_ANNUAL_PRODUCT_ID = process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID 
 
 export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, reason }) {
   const dialogRef = useRef(null);
+  const closeTimerRef = useRef(null);
   const [showKeyForm, setShowKeyForm] = useState(false);
   const [licenseKey, setLicenseKey] = useState('');
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [checking, setChecking] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
   // Open/close native <dialog> via showModal() / close()
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (isOpen && !dialog.open) {
+      setError('');
+      setSuccessMsg('');
       dialog.showModal();
     } else if (!isOpen && dialog.open) {
       dialog.close();
@@ -79,31 +88,32 @@ export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, rea
       return;
     }
 
+    if (!POLAR_ORG_ID) {
+      setError('License verification is not configured on this deployment yet. Set NEXT_PUBLIC_POLAR_ORG_ID to enable activation.');
+      return;
+    }
+
     setChecking(true);
     try {
-      if (POLAR_ORG_ID) {
-        const res = await fetch('https://api.polar.sh/v1/customer-portal/license-keys/validate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: trimmed, organization_id: POLAR_ORG_ID }),
-        });
-        if (!res.ok) {
-          setError('License key not found or expired. Check your Polar receipt email.');
-          return;
-        }
-        const data = await res.json();
-        if (data.status !== 'granted') {
-          setError('This annual license key is no longer active.');
-          return;
-        }
-      } else if (trimmed.length < 6) {
-        setError('Invalid license key format.');
+      const res = await fetch('https://api.polar.sh/v1/customer-portal/license-keys/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: trimmed, organization_id: POLAR_ORG_ID }),
+      });
+      if (!res.ok) {
+        setError('License key not found or expired. Check your Polar receipt email.');
+        return;
+      }
+      const data = await res.json();
+      if (data.status !== 'granted') {
+        setError('This annual license key is no longer active.');
         return;
       }
 
       onActivate(trimmed);
       setSuccessMsg('ClipForge Pro Annual unlocked on this browser!');
-      setTimeout(() => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = setTimeout(() => {
         setSuccessMsg('');
         dialogRef.current?.close();
       }, 1200);
@@ -161,7 +171,7 @@ export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, rea
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-3xl font-black text-ink-900">$29</span>
               <span className="text-sm font-medium text-ink-500">/ year</span>
-              <span className="text-xs font-mono text-ink-400 line-through">$39/yr</span>
+              <span className="text-xs font-mono text-ink-500 line-through">$39/yr</span>
             </div>
             <p className="mt-0.5 text-xs text-ink-500">
               Just $2.42/month billed annually · Cancel anytime in 1 click
@@ -264,7 +274,7 @@ export function ProModal({ isOpen, onClose, isPro, onActivate, onDeactivate, rea
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-4 text-[11px] text-ink-400">
+        <div className="flex items-center justify-center gap-4 text-[11px] text-ink-500">
           <span className="inline-flex items-center gap-1">
             <ShieldCheck size={13} className="text-emerald-600" />
             <span>100% On-Device Privacy</span>

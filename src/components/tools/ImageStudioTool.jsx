@@ -9,9 +9,10 @@ import { useStudio } from '../StudioProvider';
 async function encodeCanvasToTargetKb(img, mime, maxWidth, exactKb, quality) {
   let width = img.naturalWidth;
   let height = img.naturalHeight;
-  if (maxWidth && width > maxWidth) {
-    height = Math.round((height * maxWidth) / width);
-    width = maxWidth;
+  const safeMaxWidth = Number.isFinite(maxWidth) && maxWidth > 0 ? Math.max(16, Math.min(16384, maxWidth)) : 0;
+  if (safeMaxWidth && width > safeMaxWidth) {
+    height = Math.max(1, Math.round((height * safeMaxWidth) / width));
+    width = safeMaxWidth;
   }
 
   const canvas = document.createElement('canvas');
@@ -95,27 +96,32 @@ export function ImageStudioTool() {
     setProcessing(true);
     const updated = [];
     const targetMime = exactKbMode && format === 'image/png' ? 'image/jpeg' : format;
+    const parsedMaxWidth = Number(maxWidth);
+    const safeMaxWidth = Number.isFinite(parsedMaxWidth) && parsedMaxWidth > 0 ? parsedMaxWidth : 0;
+    const safeTargetKb = Number.isFinite(targetKb) && targetKb >= 10 ? Math.min(5000, targetKb) : 100;
 
     for (const item of items) {
+      const url = URL.createObjectURL(item.file);
       try {
-        const url = URL.createObjectURL(item.file);
         const img = new Image();
-        img.src = url;
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
+          img.src = url;
         });
         const blob = await encodeCanvasToTargetKb(
           img,
           targetMime,
-          maxWidth ? Number(maxWidth) : 0,
-          exactKbMode ? targetKb : 0,
+          safeMaxWidth,
+          exactKbMode ? safeTargetKb : 0,
           quality
         );
-        URL.revokeObjectURL(url);
-        updated.push({ ...item, outBlob: blob, outExt: extFor(targetMime) });
+        if (!blob) throw new Error('Failed to encode image');
+        updated.push({ ...item, outBlob: blob, outExt: extFor(targetMime), failed: false });
       } catch (_) {
-        updated.push(item);
+        updated.push({ ...item, outBlob: null, failed: true });
+      } finally {
+        URL.revokeObjectURL(url);
       }
     }
 
@@ -132,8 +138,14 @@ export function ImageStudioTool() {
     }
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
+    const usedNames = new Map();
     ready.forEach((it) => {
-      zip.file(`${baseName(it.file.name)}-optimized.${it.outExt}`, it.outBlob);
+      const stem = `${baseName(it.file.name)}-optimized`;
+      const key = `${stem}.${it.outExt}`.toLowerCase();
+      const count = (usedNames.get(key) || 0) + 1;
+      usedNames.set(key, count);
+      const uniqueName = count === 1 ? `${stem}.${it.outExt}` : `${stem}-${count}.${it.outExt}`;
+      zip.file(uniqueName, it.outBlob);
     });
     const content = await zip.generateAsync({ type: 'blob' });
     downloadBlob(content, 'clipforge-images.zip');
@@ -196,7 +208,10 @@ export function ImageStudioTool() {
                     min="10"
                     max="5000"
                     value={targetKb}
-                    onChange={(e) => setTargetKb(Math.max(10, Number(e.target.value)))}
+                    onChange={(e) => {
+                      const n = Number(e.target.value);
+                      if (Number.isFinite(n)) setTargetKb(Math.min(5000, Math.max(10, n)));
+                    }}
                     aria-label="Target file size in kilobytes"
                     className="w-24 rounded-lg border border-canvas-300 bg-white px-2.5 py-1.5 text-xs font-mono font-bold"
                   />
@@ -231,9 +246,19 @@ export function ImageStudioTool() {
               <input
                 id="img-max-w"
                 type="number"
+                min="16"
+                max="16384"
                 placeholder="Keep original"
                 value={maxWidth}
-                onChange={(e) => setMaxWidth(e.target.value)}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === '') {
+                    setMaxWidth('');
+                    return;
+                  }
+                  const n = Number(raw);
+                  if (Number.isFinite(n) && n >= 0) setMaxWidth(String(Math.min(16384, Math.floor(n))));
+                }}
                 className="w-full rounded-lg border border-canvas-300 bg-white px-3 py-1.5 text-xs font-mono text-ink-900 focus:border-blue-600 focus:outline-none"
               />
             </div>
@@ -253,10 +278,15 @@ export function ImageStudioTool() {
                   <div className="flex items-center gap-3 min-w-0">
                     <Images size={16} className="text-blue-600 shrink-0" />
                     <span className="truncate text-sm font-semibold text-ink-900">{item.file.name}</span>
-                    <span className="text-xs font-mono text-ink-400">{formatBytes(item.file.size)}</span>
+                    <span className="text-xs font-mono text-ink-500">{formatBytes(item.file.size)}</span>
                     {item.outBlob && (
                       <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-xs font-mono font-bold text-emerald-700">
                         <Check size={12} /> {formatBytes(item.outBlob.size)} (-{saved}%)
+                      </span>
+                    )}
+                    {item.failed && (
+                      <span className="inline-flex items-center rounded-md bg-rose-50 border border-rose-200 px-2 py-0.5 text-xs font-semibold text-rose-700">
+                        Unsupported / corrupt image
                       </span>
                     )}
                   </div>
@@ -280,8 +310,9 @@ export function ImageStudioTool() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <button
               type="button"
+              disabled={processing}
               onClick={() => setItems([])}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-canvas-300 bg-white hover:bg-canvas-100 px-3.5 py-2 text-xs font-semibold text-ink-600 cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-canvas-300 bg-white hover:bg-canvas-100 disabled:opacity-50 px-3.5 py-2 text-xs font-semibold text-ink-600 cursor-pointer"
             >
               <RefreshCw size={13} />
               <span>Clear List</span>

@@ -98,7 +98,7 @@ export function ToolPageLayout({ tool, children }) {
             >
               <summary className="cursor-pointer list-none font-semibold text-sm text-ink-900 flex items-center justify-between gap-4">
                 <span>{faq.q}</span>
-                <span className="text-ink-400 group-open:rotate-45 transition-transform text-lg leading-none">+</span>
+                <span className="text-ink-500 group-open:rotate-45 transition-transform text-lg leading-none">+</span>
               </summary>
               <p className="mt-3 text-sm leading-relaxed text-ink-500">{faq.a}</p>
             </details>

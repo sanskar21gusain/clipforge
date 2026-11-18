@@ -129,44 +129,65 @@ export function HomeDirectory() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredTools.map((tool) => {
-            const Icon = ICONS[tool.icon] || Sparkles;
-            const cat = TOOL_CATEGORIES.find((c) => c.id === tool.category);
-            return (
-              <Link
-                key={tool.slug}
-                href={`/tools/${tool.slug}`}
-                className="group rounded-2xl border border-canvas-300 bg-white p-5 shadow-card hover:border-blue-300 hover:shadow-card-hover transition-all flex flex-col justify-between gap-4"
-              >
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-canvas-300 bg-canvas-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
-                      <Icon size={20} />
+        {filteredTools.length === 0 ? (
+          <div className="rounded-2xl border border-canvas-300 bg-white p-8 sm:p-10 text-center shadow-card flex flex-col items-center gap-3">
+            <p className="text-sm font-bold text-ink-900">
+              No tools match &ldquo;{query.trim()}&rdquo;
+            </p>
+            <p className="text-xs text-ink-500 max-w-sm">
+              Try searching for keywords like background, video, GIF, audio, KB, or passport.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                setActiveCategory('all');
+              }}
+              className="mt-1 rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white shadow-sm transition-colors cursor-pointer"
+            >
+              Reset Search &amp; Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredTools.map((tool) => {
+              const Icon = ICONS[tool.icon] || Sparkles;
+              const cat = TOOL_CATEGORIES.find((c) => c.id === tool.category);
+              return (
+                <Link
+                  key={tool.slug}
+                  href={`/tools/${tool.slug}`}
+                  className="group rounded-2xl border border-canvas-300 bg-white p-5 shadow-card hover:border-blue-300 hover:shadow-card-hover transition-all flex flex-col justify-between gap-4"
+                >
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-canvas-300 bg-canvas-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
+                        <Icon size={20} />
+                      </div>
+                      <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold font-mono uppercase ${cat?.accent || ''}`}>
+                        {tool.badge || tool.category}
+                      </span>
                     </div>
-                    <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold font-mono uppercase ${cat?.accent || ''}`}>
-                      {tool.badge || tool.category}
-                    </span>
+
+                    <div>
+                      <h3 className="text-base font-bold text-ink-900 group-hover:text-blue-600 transition-colors">
+                        {tool.name}
+                      </h3>
+                      <p className="mt-1 text-xs leading-relaxed text-ink-500">
+                        {tool.tagline}
+                      </p>
+                    </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-base font-bold text-ink-900 group-hover:text-blue-600 transition-colors">
-                      {tool.name}
-                    </h3>
-                    <p className="mt-1 text-xs leading-relaxed text-ink-500">
-                      {tool.tagline}
-                    </p>
+                  <div className="flex items-center justify-between pt-2 border-t border-canvas-200 text-xs font-bold text-blue-600">
+                    <span>Open Studio Tool</span>
+                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-canvas-200 text-xs font-bold text-blue-600">
-                  <span>Open Studio Tool</span>
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Why On-Device Trust Strip */}

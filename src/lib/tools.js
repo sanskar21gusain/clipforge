@@ -1,7 +1,7 @@
 export const TOOL_CATEGORIES = [
-  { id: 'video', label: 'Video Tools', accent: 'text-blue-600 bg-blue-50 border-blue-200' },
-  { id: 'audio', label: 'Audio Tools', accent: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
-  { id: 'photo', label: 'Photo Tools', accent: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+  { id: 'video', label: 'Video Tools', accent: 'text-blue-700 bg-blue-50 border-blue-200' },
+  { id: 'audio', label: 'Audio Tools', accent: 'text-indigo-700 bg-indigo-50 border-indigo-200' },
+  { id: 'photo', label: 'Photo Tools', accent: 'text-emerald-800 bg-emerald-50 border-emerald-200' },
 ];
 
 export const TOOLS = [

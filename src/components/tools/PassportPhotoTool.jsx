@@ -8,9 +8,9 @@ import { downloadBlob } from '../../lib/format';
 import { useStudio } from '../StudioProvider';
 
 const COUNTRIES = [
-  { id: 'in', label: 'India / EU / UK (35×45mm)', wPx: 413, hPx: 531, cols: 4, rows: 2 },
-  { id: 'us', label: 'United States (2×2 in)', wPx: 600, hPx: 600, cols: 3, rows: 2 },
-  { id: 'ca', label: 'Canada (50×70mm)', wPx: 590, hPx: 827, cols: 2, rows: 2 },
+  { id: 'in', label: 'India / EU / UK (35×45mm)', wPx: 413, hPx: 531, cols: 4, rows: 2, gap: 24 },
+  { id: 'us', label: 'United States (2×2 in)', wPx: 600, hPx: 600, cols: 3, rows: 2, gap: 0 },
+  { id: 'ca', label: 'Canada (50×70mm)', wPx: 590, hPx: 827, cols: 2, rows: 1, gap: 24 },
 ];
 
 const BG_TINTS = [
@@ -29,18 +29,24 @@ export function PassportPhotoTool() {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [showGuide, setShowGuide] = useState(true);
+  const [error, setError] = useState('');
 
   const handleFiles = (files) => {
     const f = files[0];
     if (!f) return;
+    setError('');
     const url = URL.createObjectURL(f);
     const img = new Image();
     img.onload = () => {
+      URL.revokeObjectURL(url);
       setImgObj(img);
       setZoom(1.1);
       setOffsetX(0);
       setOffsetY(0);
+    };
+    img.onerror = () => {
       URL.revokeObjectURL(url);
+      setError('Could not read this image file. Please try a valid JPG, PNG, or WebP portrait photo.');
     };
     img.src = url;
   };
@@ -112,11 +118,11 @@ export function PassportPhotoTool() {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, sheet.width, sheet.height);
 
-    const gap = 24;
+    const gap = country.gap ?? 24;
     const totalW = country.cols * country.wPx + (country.cols - 1) * gap;
     const totalH = country.rows * country.hPx + (country.rows - 1) * gap;
-    const startX = Math.max(20, Math.floor((sheet.width - totalW) / 2));
-    const startY = Math.max(20, Math.floor((sheet.height - totalH) / 2));
+    const startX = Math.max(0, Math.floor((sheet.width - totalW) / 2));
+    const startY = Math.max(0, Math.floor((sheet.height - totalH) / 2));
 
     for (let r = 0; r < country.rows; r++) {
       for (let c = 0; c < country.cols; c++) {
@@ -136,12 +142,19 @@ export function PassportPhotoTool() {
 
   if (!imgObj) {
     return (
-      <Dropzone
-        accept="image/*"
-        onFiles={handleFiles}
-        title="Drop a portrait photo for Passport / Visa ID"
-        subtitle="Official India, US, UK, EU & Canada 300 DPI sizing with face alignment guide and 4×6 print sheet."
-      />
+      <div className="flex flex-col gap-3">
+        <Dropzone
+          accept="image/*"
+          onFiles={handleFiles}
+          title="Drop a portrait photo for Passport / Visa ID"
+          subtitle="Official India, US, UK, EU & Canada 300 DPI sizing with face alignment guide and 4×6 print sheet."
+        />
+        {error && (
+          <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">
+            {error}
+          </div>
+        )}
+      </div>
     );
   }
 

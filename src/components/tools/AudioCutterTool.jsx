@@ -20,6 +20,7 @@ export function AudioCutterTool() {
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [outputBlob, setOutputBlob] = useState(null);
+  const [outputFormat, setOutputFormat] = useState('mp3');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -29,8 +30,9 @@ export function AudioCutterTool() {
   }, [audioUrl]);
 
   const decodeWaveform = async (f) => {
+    let ctx = null;
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
       const buf = await ctx.decodeAudioData(await f.arrayBuffer());
       const channel = buf.getChannelData(0);
       const samples = 110;
@@ -48,9 +50,10 @@ export function AudioCutterTool() {
       setDuration(buf.duration);
       setStart(0);
       setEnd(Number(buf.duration.toFixed(1)));
-      ctx.close();
     } catch (_) {
       setPeaks([]);
+    } finally {
+      if (ctx) ctx.close().catch(() => {});
     }
   };
 
@@ -91,9 +94,14 @@ export function AudioCutterTool() {
   };
 
   const handleProcess = async () => {
-    if (!file || end <= start) return;
+    if (!file) return;
+    if (end <= start) {
+      setError('End time must be greater than start time.');
+      return;
+    }
     setProcessing(true);
     setError('');
+    setOutputBlob(null);
     setProgress(10);
 
     try {
@@ -130,6 +138,7 @@ export function AudioCutterTool() {
 
       const data = await ffmpeg.readFile(outName);
       setOutputBlob(uint8ToBlob(data, format === 'wav' ? 'audio/wav' : 'audio/mpeg'));
+      setOutputFormat(format);
       setProgress(100);
 
       await ffmpeg.deleteFile(inName).catch(() => {});
@@ -255,7 +264,10 @@ export function AudioCutterTool() {
                 <button
                   key={fmt}
                   type="button"
-                  onClick={() => setFormat(fmt)}
+                  onClick={() => {
+                    setFormat(fmt);
+                    setOutputBlob(null);
+                  }}
                   className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold uppercase font-mono cursor-pointer ${
                     format === fmt ? 'border-blue-600 bg-blue-600 text-white' : 'border-canvas-300 bg-canvas-100 text-ink-700'
                   }`}
@@ -288,11 +300,11 @@ export function AudioCutterTool() {
         {outputBlob && (
           <button
             type="button"
-            onClick={() => downloadBlob(outputBlob, `${baseName(file.name)}-cut.${format}`)}
+            onClick={() => downloadBlob(outputBlob, `${baseName(file.name)}-cut.${outputFormat}`)}
             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm cursor-pointer"
           >
             <Download size={15} />
-            <span>Download .{format.toUpperCase()} ({formatBytes(outputBlob.size)})</span>
+            <span>Download .{outputFormat.toUpperCase()} ({formatBytes(outputBlob.size)})</span>
           </button>
         )}
       </div>

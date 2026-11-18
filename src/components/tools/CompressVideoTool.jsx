@@ -63,8 +63,9 @@ export function CompressVideoTool() {
       await ffmpeg.writeFile(inputName, await fileToUint8Array(file));
 
       const dur = Math.max(1, duration || 15);
+      const safeMb = Number.isFinite(targetMb) ? Math.min(500, Math.max(1, targetMb)) : 8;
       // Target total kilobits with 12% container headroom
-      const totalKbps = Math.floor(((targetMb * 0.88) * 8192) / dur);
+      const totalKbps = Math.floor(((safeMb * 0.88) * 8192) / dur);
       const audioKbps = totalKbps < 350 ? 64 : 96;
       const videoKbps = Math.max(150, totalKbps - audioKbps);
 
@@ -187,7 +188,10 @@ export function CompressVideoTool() {
               min="1"
               max="500"
               value={targetMb}
-              onChange={(e) => setTargetMb(Math.max(1, Number(e.target.value)))}
+              onChange={(e) => {
+                const n = Number(e.target.value);
+                if (Number.isFinite(n)) setTargetMb(Math.min(500, Math.max(1, n)));
+              }}
               className="w-28 rounded-lg border border-canvas-300 bg-white px-3 py-1.5 text-sm font-mono font-bold text-ink-900 focus:border-blue-600 focus:outline-none"
             />
           </div>

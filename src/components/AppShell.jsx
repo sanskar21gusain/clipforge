@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -40,7 +40,16 @@ export function AppShell({ children }) {
   const { isPro, openProModal } = useStudio();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const renderSidebarContent = () => (
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setMobileNavOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileNavOpen]);
+
+  const renderSidebarContent = (isMobileDrawer = false) => (
     <div className="flex h-full flex-col gap-5 p-4">
       {/* Brand */}
       <div className="flex items-center justify-between px-1">
@@ -56,20 +65,22 @@ export function AppShell({ children }) {
             <div className="text-base font-extrabold tracking-tight text-ink-900 leading-none">
               Clip<span className="text-blue-600">Forge</span>
             </div>
-            <div className="mt-0.5 text-[11px] font-medium text-ink-400">
+            <div className="mt-0.5 text-[11px] font-medium text-ink-500">
               Video, Audio &amp; Photo Studio
             </div>
           </div>
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setMobileNavOpen(false)}
-          aria-label="Close navigation"
-          className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-canvas-300 bg-white text-ink-600"
-        >
-          <X size={18} />
-        </button>
+        {isMobileDrawer && (
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen(false)}
+            aria-label="Close navigation"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-canvas-300 bg-white text-ink-700 hover:bg-canvas-100 cursor-pointer"
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       {/* Home + Annual Pro Card */}
@@ -121,12 +132,15 @@ export function AppShell({ children }) {
       </div>
 
       {/* Categorized Tool Links */}
-      <nav aria-label="Media tools" className="flex-1 overflow-y-auto pr-1 flex flex-col gap-5">
+      <nav
+        aria-label={isMobileDrawer ? 'Mobile media tools' : 'Media tools'}
+        className="flex-1 overflow-y-auto pr-1 flex flex-col gap-5"
+      >
         {TOOL_CATEGORIES.map((cat) => {
           const items = getToolsByCategory(cat.id);
           return (
             <div key={cat.id} className="flex flex-col gap-1">
-              <div className="px-2.5 text-[11px] font-bold uppercase tracking-wider text-ink-400 font-mono">
+              <div className="px-2.5 text-[11px] font-bold uppercase tracking-wider text-ink-500 font-mono">
                 {cat.label}
               </div>
               {items.map((tool) => {
@@ -151,8 +165,8 @@ export function AppShell({ children }) {
                       <span
                         className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold font-mono ${
                           active
-                            ? 'bg-white/20 text-white'
-                            : 'bg-canvas-200 text-ink-500'
+                            ? 'bg-blue-800/80 text-white'
+                            : 'bg-canvas-200 text-ink-700'
                         }`}
                       >
                         {tool.badge}
@@ -227,18 +241,23 @@ export function AppShell({ children }) {
       <div className="flex flex-1 min-w-0">
         {/* Desktop Persistent Sidebar */}
         <aside className="hidden lg:block w-64 xl:w-72 shrink-0 border-r border-canvas-300 bg-white sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
-          {renderSidebarContent()}
+          {renderSidebarContent(false)}
         </aside>
 
         {/* Mobile Drawer */}
         {mobileNavOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden flex">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Tool navigation"
+            className="fixed inset-0 z-50 lg:hidden flex"
+          >
             <div
               className="fixed inset-0 bg-ink-900/35 backdrop-blur-sm"
               onClick={() => setMobileNavOpen(false)}
             />
             <div className="relative z-10 w-72 max-w-[85vw] bg-white h-full shadow-2xl">
-              {renderSidebarContent()}
+              {renderSidebarContent(true)}
             </div>
           </div>
         )}

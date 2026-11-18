@@ -41,6 +41,12 @@ export function Mp4ToGifTool() {
 
   const handleConvert = async () => {
     if (!file) return;
+    const safeStart = Number.isFinite(start) ? Math.max(0, start) : 0;
+    const safeLen = Number.isFinite(lengthSec) ? Math.min(20, Math.max(1, lengthSec)) : 5;
+    if (duration > 0 && safeStart >= duration) {
+      setError('Start time must be less than the video duration.');
+      return;
+    }
     setProcessing(true);
     setError('');
     setProgress(10);
@@ -55,8 +61,8 @@ export function Mp4ToGifTool() {
       const filter = `fps=${fps},scale=${width}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`;
 
       const exitCode = await ffmpeg.exec([
-        '-ss', String(start),
-        '-t', String(lengthSec),
+        '-ss', String(safeStart),
+        '-t', String(safeLen),
         '-i', inputName,
         '-vf', filter,
         '-loop', '0',
@@ -142,7 +148,13 @@ export function Mp4ToGifTool() {
                 max={Math.max(0, Math.floor(duration - 1))}
                 step="0.5"
                 value={start}
-                onChange={(e) => setStart(Math.max(0, Number(e.target.value)))}
+                onChange={(e) => {
+                  const n = Number(e.target.value);
+                  if (Number.isFinite(n)) {
+                    const maxStart = duration > 1 ? Math.max(0, duration - 0.5) : 3600;
+                    setStart(Math.min(maxStart, Math.max(0, n)));
+                  }
+                }}
                 className="w-full rounded-lg border border-canvas-300 bg-white px-3 py-2 text-sm font-mono"
               />
             </div>
@@ -158,7 +170,10 @@ export function Mp4ToGifTool() {
                 max="20"
                 step="0.5"
                 value={lengthSec}
-                onChange={(e) => setLengthSec(Math.min(20, Math.max(1, Number(e.target.value))))}
+                onChange={(e) => {
+                  const n = Number(e.target.value);
+                  if (Number.isFinite(n)) setLengthSec(Math.min(20, Math.max(1, n)));
+                }}
                 className="w-full rounded-lg border border-canvas-300 bg-white px-3 py-2 text-sm font-mono"
               />
             </div>

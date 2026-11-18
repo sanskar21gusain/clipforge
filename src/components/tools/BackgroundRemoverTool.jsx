@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Download, RefreshCw, Loader2, Sparkles, Check } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { downloadBlob, formatBytes, baseName } from '../../lib/format';
@@ -13,6 +13,7 @@ const BACKDROPS = [
 ];
 
 export function BackgroundRemoverTool() {
+  const runIdRef = useRef(0);
   const [sourceFile, setSourceFile] = useState(null);
   const [sourceUrl, setSourceUrl] = useState(null);
   const [resultBlob, setResultBlob] = useState(null);
@@ -37,6 +38,7 @@ export function BackgroundRemoverTool() {
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
     if (resultUrl) URL.revokeObjectURL(resultUrl);
 
+    const runId = ++runIdRef.current;
     const nextSource = URL.createObjectURL(file);
     setSourceFile(file);
     setSourceUrl(nextSource);
@@ -50,6 +52,7 @@ export function BackgroundRemoverTool() {
       const { removeBackground } = await import('@imgly/background-removal');
       const blob = await removeBackground(file, {
         progress: (key, current, total) => {
+          if (runId !== runIdRef.current) return;
           if (total > 0) {
             const pct = Math.min(100, Math.round((current / total) * 100));
             setStatusText(
@@ -60,15 +63,19 @@ export function BackgroundRemoverTool() {
           }
         },
       });
+      if (runId !== runIdRef.current) return;
       const outUrl = URL.createObjectURL(blob);
       setResultBlob(blob);
       setResultUrl(outUrl);
     } catch (err) {
+      if (runId !== runIdRef.current) return;
       console.error(err);
       setError('Could not process this image locally. Try a standard JPG, PNG, or WebP photo.');
     } finally {
-      setProcessing(false);
-      setStatusText('');
+      if (runId === runIdRef.current) {
+        setProcessing(false);
+        setStatusText('');
+      }
     }
   };
 
@@ -130,8 +137,12 @@ export function BackgroundRemoverTool() {
         <button
           type="button"
           onClick={() => {
+            runIdRef.current += 1;
+            setProcessing(false);
+            setStatusText('');
             setSourceFile(null);
             setResultBlob(null);
+            setResultUrl(null);
           }}
           className="inline-flex items-center gap-1.5 rounded-xl border border-canvas-300 bg-white hover:bg-canvas-200 px-3 py-1.5 text-xs font-semibold text-ink-700 cursor-pointer"
         >
@@ -194,9 +205,7 @@ export function BackgroundRemoverTool() {
 
             <button
               type="button"
-              onMouseDown={() => setShowOriginal(true)}
-              onMouseUp={() => setShowOriginal(false)}
-              onMouseLeave={() => setShowOriginal(false)}
+              aria-pressed={showOriginal}
               onClick={() => setShowOriginal((v) => !v)}
               className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                 showOriginal

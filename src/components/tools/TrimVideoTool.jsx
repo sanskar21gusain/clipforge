@@ -17,6 +17,7 @@ export function TrimVideoTool() {
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [outputBlob, setOutputBlob] = useState(null);
+  const [outputExt, setOutputExt] = useState('mp4');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -51,7 +52,9 @@ export function TrimVideoTool() {
       const ffmpeg = await getFFmpeg((pct) => setProgress(Math.max(10, pct)));
       const ext = file.name.split('.').pop()?.toLowerCase() || 'mp4';
       const inputName = `in.${ext}`;
-      const outputName = 'trimmed.mp4';
+      const fastWebm = mode === 'fast' && ext === 'webm';
+      const outExt = fastWebm ? 'webm' : 'mp4';
+      const outputName = `trimmed.${outExt}`;
 
       await ffmpeg.writeFile(inputName, await fileToUint8Array(file));
       const clipDuration = (end - start).toFixed(2);
@@ -66,7 +69,8 @@ export function TrimVideoTool() {
         throw new Error(`FFmpeg exited with code ${exitCode}`);
       }
       const data = await ffmpeg.readFile(outputName);
-      setOutputBlob(uint8ToBlob(data, 'video/mp4'));
+      setOutputExt(outExt);
+      setOutputBlob(uint8ToBlob(data, fastWebm ? 'video/webm' : 'video/mp4'));
       setProgress(100);
 
       await ffmpeg.deleteFile(inputName).catch(() => {});
@@ -139,7 +143,10 @@ export function TrimVideoTool() {
             <button
               type="button"
               onClick={() => {
-                if (videoRef.current) setStart(Number(videoRef.current.currentTime.toFixed(1)));
+                if (videoRef.current) {
+                  const t = Number(videoRef.current.currentTime.toFixed(1));
+                  setStart(Math.min(t, Math.max(0, end - 0.2)));
+                }
               }}
               className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
             >
@@ -170,7 +177,10 @@ export function TrimVideoTool() {
             <button
               type="button"
               onClick={() => {
-                if (videoRef.current) setEnd(Number(videoRef.current.currentTime.toFixed(1)));
+                if (videoRef.current) {
+                  const t = Number(videoRef.current.currentTime.toFixed(1));
+                  setEnd(Math.max(t, Math.min(duration || t, start + 0.2)));
+                }
               }}
               className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
             >
@@ -261,7 +271,7 @@ export function TrimVideoTool() {
           {outputBlob && (
             <button
               type="button"
-              onClick={() => downloadBlob(outputBlob, `${baseName(file.name)}-trimmed.mp4`)}
+              onClick={() => downloadBlob(outputBlob, `${baseName(file.name)}-trimmed.${outputExt}`)}
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-sm font-bold text-white shadow-sm cursor-pointer"
             >
               <Download size={15} />

@@ -116,7 +116,10 @@ export function ExtractAudioTool() {
             <button
               key={opt.id}
               type="button"
-              onClick={() => setAction(opt.id)}
+              onClick={() => {
+                setAction(opt.id);
+                setOutputBlob(null);
+              }}
               className={`rounded-2xl border p-4 text-left transition-all cursor-pointer ${
                 action === opt.id
                   ? 'border-blue-600 bg-blue-50/70'

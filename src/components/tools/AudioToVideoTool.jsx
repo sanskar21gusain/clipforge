@@ -26,6 +26,7 @@ export function AudioToVideoTool() {
   const recorderRef = useRef(null);
   const audioCtxRef = useRef(null);
   const sourceNodeRef = useRef(null);
+  const startingRef = useRef(false);
 
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('Episode 12 · Building in Public');
@@ -36,6 +37,7 @@ export function AudioToVideoTool() {
   const [elapsedSec, setElapsedSec] = useState(0);
   const [totalSec, setTotalSec] = useState(0);
   const [videoBlob, setVideoBlob] = useState(null);
+  const [videoExt, setVideoExt] = useState('webm');
   const [error, setError] = useState('');
 
   // Draw static preview whenever settings change
@@ -116,13 +118,24 @@ export function AudioToVideoTool() {
   }
 
   const startRecording = async () => {
-    if (!file || !canvasRef.current) return;
+    if (!file || !canvasRef.current || recording || startingRef.current) return;
+    if (typeof MediaRecorder === 'undefined' || typeof canvasRef.current.captureStream !== 'function') {
+      setError('This browser does not support in-browser video capture. Please try Chrome, Edge, or Firefox.');
+      return;
+    }
+
+    startingRef.current = true;
+    setRecording(true);
     setError('');
     setVideoBlob(null);
 
+    let audioCtx = null;
     try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       audioCtxRef.current = audioCtx;
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
       const decoded = await audioCtx.decodeAudioData(await file.arrayBuffer());
       setTotalSec(decoded.duration || 0);
       setElapsedSec(0);
@@ -141,29 +154,48 @@ export function AudioToVideoTool() {
       analyser.connect(dest);
       analyser.connect(audioCtx.destination);
 
+      drawFrame(canvasRef.current, freqData, theme, title, subtitle, !isPro);
       const canvasStream = canvasRef.current.captureStream(30);
       const combined = new MediaStream([
         ...canvasStream.getVideoTracks(),
         ...dest.stream.getAudioTracks(),
       ]);
 
-      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
-        ? 'video/webm;codecs=vp9,opus'
-        : 'video/webm';
+      // Prefer VP8+Opus first: Chrome on Windows reliably encodes VP8 canvas streams while VP9 can drop short streams.
+      const candidates = [
+        { mime: 'video/webm;codecs=vp8,opus', ext: 'webm' },
+        { mime: 'video/webm;codecs=vp9,opus', ext: 'webm' },
+        { mime: 'video/webm', ext: 'webm' },
+        { mime: 'video/mp4', ext: 'mp4' },
+      ];
+      const chosen = candidates.find((c) => MediaRecorder.isTypeSupported(c.mime));
+      if (!chosen) {
+        throw new Error('No supported MediaRecorder video codec found');
+      }
 
       const chunks = [];
-      const recorder = new MediaRecorder(combined, { mimeType, videoBitsPerSecond: 3_500_000 });
+      const recorder = new MediaRecorder(combined, {
+        mimeType: chosen.mime,
+        videoBitsPerSecond: 3_500_000,
+      });
       recorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunks.push(e.data);
+        if (e.data && e.data.size > 0) chunks.push(e.data);
       };
 
       recorder.onstop = () => {
         if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        startingRef.current = false;
         setRecording(false);
-        setVideoBlob(new Blob(chunks, { type: mimeType }));
-        audioCtx.close().catch(() => {});
+        const blob = new Blob(chunks, { type: chosen.mime });
+        if (blob.size > 0) {
+          setVideoExt(chosen.ext);
+          setVideoBlob(blob);
+        } else {
+          setError('Recorded video was empty. Try letting the clip play for at least 1 second.');
+        }
+        audioCtx?.close().catch(() => {});
       };
 
       const renderLoop = () => {
@@ -175,15 +207,20 @@ export function AudioToVideoTool() {
         rafRef.current = requestAnimationFrame(renderLoop);
       };
 
-      setRecording(true);
-      recorder.start();
+      recorder.start(200);
       renderLoop();
       source.start(0);
       source.onended = () => {
-        if (recorder.state === 'recording') recorder.stop();
+        if (recorder.state === 'recording') {
+          try { recorder.requestData(); } catch (_) {}
+          recorder.stop();
+        }
       };
     } catch (err) {
       console.error(err);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (audioCtx) audioCtx.close().catch(() => {});
+      startingRef.current = false;
       setRecording(false);
       setError('Could not record audiogram in this browser. Try Chrome or Edge with an MP3/WAV file.');
     }
@@ -253,9 +290,10 @@ export function AudioToVideoTool() {
             <input
               id="av-title"
               type="text"
+              disabled={recording}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border border-canvas-300 bg-white px-3 py-2 text-sm text-ink-900 focus:border-blue-600 focus:outline-none"
+              className="w-full rounded-lg border border-canvas-300 bg-white px-3 py-2 text-sm text-ink-900 disabled:opacity-60 focus:border-blue-600 focus:outline-none"
             />
           </div>
 
@@ -266,9 +304,10 @@ export function AudioToVideoTool() {
             <input
               id="av-sub"
               type="text"
+              disabled={recording}
               value={subtitle}
               onChange={(e) => setSubtitle(e.target.value)}
-              className="w-full rounded-lg border border-canvas-300 bg-white px-3 py-2 text-sm text-ink-900 focus:border-blue-600 focus:outline-none"
+              className="w-full rounded-lg border border-canvas-300 bg-white px-3 py-2 text-sm text-ink-900 disabled:opacity-60 focus:border-blue-600 focus:outline-none"
             />
           </div>
 
@@ -353,7 +392,7 @@ export function AudioToVideoTool() {
             {videoBlob && (
               <button
                 type="button"
-                onClick={() => downloadBlob(videoBlob, `${baseName(file.name)}-waveform.webm`)}
+                onClick={() => downloadBlob(videoBlob, `${baseName(file.name)}-waveform.${videoExt}`)}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-ink-900 hover:bg-ink-700 py-2.5 text-sm font-bold text-white cursor-pointer"
               >
                 <Download size={15} />
