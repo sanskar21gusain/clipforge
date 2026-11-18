@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Download, Loader2, RefreshCw, Music, VolumeX } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, fileToUint8Array } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 
 export function ExtractAudioTool() {
@@ -41,15 +41,19 @@ export function ExtractAudioTool() {
         mime = 'audio/wav';
         args = ['-i', inName, '-vn', '-acodec', 'pcm_s16le', outName];
       } else {
-        outName = 'muted.mp4';
-        mime = 'video/mp4';
+        const isWebm = inExt === 'webm';
+        outName = isWebm ? 'muted.webm' : 'muted.mp4';
+        mime = isWebm ? 'video/webm' : 'video/mp4';
         args = ['-i', inName, '-c:v', 'copy', '-an', outName];
       }
 
-      await ffmpeg.exec(args);
+      const exitCode = await ffmpeg.exec(args);
+      if (exitCode !== 0) {
+        throw new Error(`FFmpeg exited with code ${exitCode}`);
+      }
       const data = await ffmpeg.readFile(outName);
-      setOutputBlob(new Blob([data.buffer], { type: mime }));
-      setOutputExt(action === 'mute' ? 'mp4' : action);
+      setOutputBlob(uint8ToBlob(data, mime));
+      setOutputExt(action === 'mute' ? (inExt === 'webm' ? 'webm' : 'mp4') : action);
       setProgress(100);
 
       await ffmpeg.deleteFile(inName).catch(() => {});
@@ -58,6 +62,7 @@ export function ExtractAudioTool() {
       console.error(err);
       setError('Could not process this media file. Ensure the video contains a valid track.');
     } finally {
+      clearFFmpegProgress();
       setProcessing(false);
     }
   };

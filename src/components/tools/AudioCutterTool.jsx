@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AudioLines, Download, Loader2, RefreshCw, Volume2 } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, fileToUint8Array } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
 
 export function AudioCutterTool() {
@@ -116,7 +116,7 @@ export function AudioCutterTool() {
           ? ['-acodec', 'pcm_s16le']
           : ['-acodec', 'libmp3lame', '-b:a', '192k'];
 
-      await ffmpeg.exec([
+      const exitCode = await ffmpeg.exec([
         '-ss', start.toFixed(2),
         '-t', segDur.toFixed(2),
         '-i', inName,
@@ -124,9 +124,12 @@ export function AudioCutterTool() {
         ...codecArgs,
         outName,
       ]);
+      if (exitCode !== 0) {
+        throw new Error(`FFmpeg exited with code ${exitCode}`);
+      }
 
       const data = await ffmpeg.readFile(outName);
-      setOutputBlob(new Blob([data.buffer], { type: format === 'wav' ? 'audio/wav' : 'audio/mpeg' }));
+      setOutputBlob(uint8ToBlob(data, format === 'wav' ? 'audio/wav' : 'audio/mpeg'));
       setProgress(100);
 
       await ffmpeg.deleteFile(inName).catch(() => {});
@@ -135,6 +138,7 @@ export function AudioCutterTool() {
       console.error(err);
       setError('Audio processing failed in browser. Try MP3 or WAV input.');
     } finally {
+      clearFFmpegProgress();
       setProcessing(false);
     }
   };
@@ -173,7 +177,18 @@ export function AudioCutterTool() {
       {/* Live Waveform Canvas */}
       <div className="rounded-2xl border border-canvas-300 bg-canvas-100 p-4 flex flex-col gap-3">
         <canvas ref={canvasRef} width={760} height={110} className="w-full h-24 rounded-lg" />
-        <audio src={audioUrl} controls className="w-full" />
+        <audio
+          src={audioUrl}
+          controls
+          onLoadedMetadata={(e) => {
+            if ((!duration || duration <= 0) && Number.isFinite(e.currentTarget.duration) && e.currentTarget.duration > 0) {
+              const d = e.currentTarget.duration;
+              setDuration(d);
+              setEnd(Number(d.toFixed(1)));
+            }
+          }}
+          className="w-full"
+        />
       </div>
 
       {/* Trim + Volume + Fade Controls */}

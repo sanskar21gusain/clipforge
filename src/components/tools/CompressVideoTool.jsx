@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Loader2, RefreshCw, Minimize2, CheckCircle2 } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, fileToUint8Array } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 
 const PRESETS = [
@@ -68,9 +68,11 @@ export function CompressVideoTool() {
       const audioKbps = totalKbps < 350 ? 64 : 96;
       const videoKbps = Math.max(150, totalKbps - audioKbps);
 
-      await ffmpeg.exec([
+      const exitCode = await ffmpeg.exec([
         '-i', inputName,
+        '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2',
         '-c:v', 'libx264',
+        '-pix_fmt', 'yuv420p',
         '-b:v', `${videoKbps}k`,
         '-maxrate', `${Math.round(videoKbps * 1.25)}k`,
         '-bufsize', `${Math.round(videoKbps * 2)}k`,
@@ -80,9 +82,12 @@ export function CompressVideoTool() {
         '-movflags', '+faststart',
         outputName,
       ]);
+      if (exitCode !== 0) {
+        throw new Error(`FFmpeg exited with code ${exitCode}`);
+      }
 
       const data = await ffmpeg.readFile(outputName);
-      const blob = new Blob([data.buffer], { type: 'video/mp4' });
+      const blob = uint8ToBlob(data, 'video/mp4');
       setOutputBlob(blob);
       setProgress(100);
       setStatus('Compression complete!');
@@ -93,6 +98,7 @@ export function CompressVideoTool() {
       console.error(err);
       setError('Compression failed in browser. Try a shorter MP4/WebM file under 250 MB.');
     } finally {
+      clearFFmpegProgress();
       setProcessing(false);
     }
   };

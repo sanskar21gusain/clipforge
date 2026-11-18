@@ -81,8 +81,11 @@ export function BackgroundRemoverTool() {
 
     // Composite onto selected solid studio backdrop
     const img = new Image();
-    img.src = resultUrl;
-    await new Promise((resolve) => { img.onload = resolve; });
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = resultUrl;
+    });
     const canvas = document.createElement('canvas');
     canvas.width = img.naturalWidth;
     canvas.height = img.naturalHeight;

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { Download, Grid2X2, RefreshCw, ZoomIn, Crown } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
 import { downloadBlob } from '../../lib/format';
@@ -221,8 +222,15 @@ export function PassportPhotoTool() {
 
           <label className="inline-flex items-center gap-2 text-xs font-semibold text-ink-700 cursor-pointer">
             <input type="checkbox" checked={showGuide} onChange={(e) => setShowGuide(e.target.checked)} className="h-4 w-4 accent-blue-600 cursor-pointer" />
-            <span>Show Face & Eye Alignment Guide</span>
+            <span>Show Face &amp; Eye Alignment Guide</span>
           </label>
+
+          <Link
+            href="/tools/background-remover"
+            className="text-xs font-semibold text-blue-600 hover:underline w-fit"
+          >
+            Need a clean white background first? Open Background Remover &rarr;
+          </Link>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2.5 pt-2">

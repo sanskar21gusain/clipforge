@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Film, Download, Loader2, RefreshCw } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, fileToUint8Array } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
 
 export function Mp4ToGifTool() {
@@ -54,7 +54,7 @@ export function Mp4ToGifTool() {
       await ffmpeg.writeFile(inputName, await fileToUint8Array(file));
       const filter = `fps=${fps},scale=${width}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse`;
 
-      await ffmpeg.exec([
+      const exitCode = await ffmpeg.exec([
         '-ss', String(start),
         '-t', String(lengthSec),
         '-i', inputName,
@@ -62,9 +62,12 @@ export function Mp4ToGifTool() {
         '-loop', '0',
         outName,
       ]);
+      if (exitCode !== 0) {
+        throw new Error(`FFmpeg exited with code ${exitCode}`);
+      }
 
       const data = await ffmpeg.readFile(outName);
-      const blob = new Blob([data.buffer], { type: 'image/gif' });
+      const blob = uint8ToBlob(data, 'image/gif');
       if (gifUrl) URL.revokeObjectURL(gifUrl);
       setGifBlob(blob);
       setGifUrl(URL.createObjectURL(blob));
@@ -76,6 +79,7 @@ export function Mp4ToGifTool() {
       console.error(err);
       setError('GIF rendering failed. Try a shorter duration (3–10 seconds) or 480px width.');
     } finally {
+      clearFFmpegProgress();
       setProcessing(false);
     }
   };

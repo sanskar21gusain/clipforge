@@ -55,7 +55,7 @@ async function encodeCanvasToTargetKb(img, mime, maxWidth, exactKb, quality) {
 
   // If still above target, scale down gradually
   let scale = 0.85;
-  while (best && best.size > targetBytes && scale >= 0.25) {
+  while (best && best.size > targetBytes && scale >= 0.1) {
     best = await renderAt(width * scale, height * scale, 0.65);
     scale -= 0.15;
   }

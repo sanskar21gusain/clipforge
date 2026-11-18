@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Scissors, Download, Loader2, RefreshCw, Zap, Target } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, fileToUint8Array } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
 
 export function TrimVideoTool() {
@@ -59,11 +59,14 @@ export function TrimVideoTool() {
       const args =
         mode === 'fast'
           ? ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-c', 'copy', outputName]
-          : ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-c:v', 'libx264', '-preset', 'veryfast', '-c:a', 'aac', '-movflags', '+faststart', outputName];
+          : ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'veryfast', '-c:a', 'aac', '-movflags', '+faststart', outputName];
 
-      await ffmpeg.exec(args);
+      const exitCode = await ffmpeg.exec(args);
+      if (exitCode !== 0) {
+        throw new Error(`FFmpeg exited with code ${exitCode}`);
+      }
       const data = await ffmpeg.readFile(outputName);
-      setOutputBlob(new Blob([data.buffer], { type: 'video/mp4' }));
+      setOutputBlob(uint8ToBlob(data, 'video/mp4'));
       setProgress(100);
 
       await ffmpeg.deleteFile(inputName).catch(() => {});
@@ -72,6 +75,7 @@ export function TrimVideoTool() {
       console.error(err);
       setError('Could not trim this clip. Try Accurate Re-Encode mode if Fast Copy fails on this codec.');
     } finally {
+      clearFFmpegProgress();
       setProcessing(false);
     }
   };
@@ -149,7 +153,11 @@ export function TrimVideoTool() {
             max={Math.max(0.1, duration)}
             step="0.1"
             value={start}
-            onChange={(e) => setStart(Math.min(Number(e.target.value), Math.max(0, end - 0.2)))}
+            onChange={(e) => {
+              const nextStart = Math.min(Number(e.target.value), Math.max(0, end - 0.2));
+              setStart(nextStart);
+              if (videoRef.current) videoRef.current.currentTime = nextStart;
+            }}
             className="accent-blue-600 cursor-pointer"
           />
         </div>

@@ -57,7 +57,7 @@ export function AppShell({ children }) {
               Clip<span className="text-blue-600">Forge</span>
             </div>
             <div className="mt-0.5 text-[11px] font-medium text-ink-400">
-              On-Device Media Studio
+              Video, Audio &amp; Photo Studio
             </div>
           </div>
         </Link>
@@ -165,18 +165,12 @@ export function AppShell({ children }) {
           );
         })}
       </nav>
-
-      {/* Sidebar Privacy Footer */}
-      <div className="rounded-xl border border-canvas-300 bg-canvas-100 p-3 text-[11px] text-ink-500 flex items-center gap-2">
-        <ShieldCheck size={15} className="shrink-0 text-emerald-600" />
-        <span className="leading-snug">Zero cloud uploads. Files process locally in your browser.</span>
-      </div>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-canvas-100 text-ink-900 flex flex-col">
-      {/* Top Promo & Quick Bar */}
+      {/* Top Bar */}
       <div className="sticky top-0 z-30 border-b border-canvas-300 bg-white/90 backdrop-blur-md">
         <div className="flex items-center justify-between px-4 sm:px-6 h-14">
           <div className="flex items-center gap-3">
@@ -199,10 +193,9 @@ export function AppShell({ children }) {
             </Link>
 
             <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-ink-500">
-              <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-              <span>100% Client-Side Engine</span>
+              <span>No Sign-Up Required</span>
               <span className="text-canvas-400">·</span>
-              <span>No Sign-Up · No File Uploads</span>
+              <span>Instant Export</span>
             </div>
           </div>
 
@@ -233,7 +226,7 @@ export function AppShell({ children }) {
       {/* Main Flex Body */}
       <div className="flex flex-1 min-w-0">
         {/* Desktop Persistent Sidebar */}
-        <aside className="hidden lg:block w-68 xl:w-72 shrink-0 border-r border-canvas-300 bg-white sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
+        <aside className="hidden lg:block w-64 xl:w-72 shrink-0 border-r border-canvas-300 bg-white sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
           {renderSidebarContent()}
         </aside>
 
@@ -241,7 +234,7 @@ export function AppShell({ children }) {
         {mobileNavOpen && (
           <div className="fixed inset-0 z-50 lg:hidden flex">
             <div
-              className="fixed inset-0 bg-ink-900/35 backdrop-blur-xs"
+              className="fixed inset-0 bg-ink-900/35 backdrop-blur-sm"
               onClick={() => setMobileNavOpen(false)}
             />
             <div className="relative z-10 w-72 max-w-[85vw] bg-white h-full shadow-2xl">

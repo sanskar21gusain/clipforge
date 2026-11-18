@@ -33,6 +33,8 @@ export function AudioToVideoTool() {
   const [theme, setTheme] = useState(THEMES[0]);
   const [ratio, setRatio] = useState(RATIOS[0]);
   const [recording, setRecording] = useState(false);
+  const [elapsedSec, setElapsedSec] = useState(0);
+  const [totalSec, setTotalSec] = useState(0);
   const [videoBlob, setVideoBlob] = useState(null);
   const [error, setError] = useState('');
 
@@ -46,6 +48,10 @@ export function AudioToVideoTool() {
   useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      try { sourceNodeRef.current?.stop(); } catch (_) {}
+      if (recorderRef.current?.state === 'recording') {
+        try { recorderRef.current.stop(); } catch (_) {}
+      }
       if (audioCtxRef.current) audioCtxRef.current.close().catch(() => {});
     };
   }, []);
@@ -118,6 +124,9 @@ export function AudioToVideoTool() {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       audioCtxRef.current = audioCtx;
       const decoded = await audioCtx.decodeAudioData(await file.arrayBuffer());
+      setTotalSec(decoded.duration || 0);
+      setElapsedSec(0);
+      const startTimestamp = performance.now();
 
       const source = audioCtx.createBufferSource();
       source.buffer = decoded;
@@ -159,6 +168,7 @@ export function AudioToVideoTool() {
 
       const renderLoop = () => {
         analyser.getByteFrequencyData(freqData);
+        setElapsedSec(Math.min(decoded.duration || 0, (performance.now() - startTimestamp) / 1000));
         if (canvasRef.current) {
           drawFrame(canvasRef.current, freqData, theme, title, subtitle, !isPro);
         }
@@ -334,7 +344,9 @@ export function AudioToVideoTool() {
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 py-2.5 text-sm font-bold text-white cursor-pointer"
               >
                 <Square size={14} />
-                <span>Stop & Save Clip Now</span>
+                <span>
+                  Stop &amp; Save ({elapsedSec.toFixed(1)}s / {totalSec.toFixed(1)}s)
+                </span>
               </button>
             )}
 
