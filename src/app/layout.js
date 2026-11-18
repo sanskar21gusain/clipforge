@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { StudioProvider } from '../components/StudioProvider';
 import { AppShell } from '../components/AppShell';
+import { AnalyticsClient } from '../components/AnalyticsClient';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -67,6 +68,7 @@ export default function RootLayout({ children }) {
         <StudioProvider>
           <AppShell>{children}</AppShell>
         </StudioProvider>
+        <AnalyticsClient />
       </body>
     </html>
   );
