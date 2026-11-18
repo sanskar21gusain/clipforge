@@ -130,6 +130,27 @@ export const TOOLS = [
     ],
   },
   {
+    slug: 'merge-videos',
+    name: 'Merge & Join Videos',
+    shortName: 'Merge Videos',
+    category: 'video',
+    badge: 'Multi-Clip',
+    icon: 'Combine',
+    tagline: 'Combine multiple MP4, MOV, or WebM clips into one seamless video—free for 2 clips, unlimited with Pro Annual.',
+    seoTitle: 'Free Online Video Merger & Joiner (No Upload, No Watermark) | ClipForge',
+    seoDescription: 'Join and merge multiple MP4, MOV, and WebM clips into one smooth H.264 MP4 right in your browser with automatic resolution normalization.',
+    privacyNote: 'Multi-clip normalization and stitching happen entirely inside your browser via FFmpeg WebAssembly.',
+    steps: [
+      { title: 'Add 2 or more video clips', body: 'Drop MP4, MOV, or WebM clips and arrange them in your exact playback order.' },
+      { title: 'Pick output resolution', body: 'Choose 16:9 HD, 9:16 Vertical, or Pro 1080p Full HD—mixed clip sizes normalize automatically.' },
+      { title: 'Stitch & download MP4', body: 'Export one clean, seamless H.264 MP4 without uploading a single megabyte.' },
+    ],
+    faqs: [
+      { q: 'Can I merge videos that have different resolutions or frame rates?', a: 'Yes. ClipForge automatically normalizes aspect ratio, frame rate, and pixel format so clips stitch cleanly without glitches.' },
+      { q: 'How many clips can I merge on the free plan?', a: 'Merging 2 clips in 720p HD or 9:16 Vertical is completely free; ClipForge Pro Annual unlocks merging 3+ clips and 1080p Full HD output.' },
+    ],
+  },
+  {
     slug: 'extract-audio',
     name: 'Extract or Mute Audio',
     shortName: 'Extract / Mute Audio',

@@ -11,6 +11,7 @@
 - [MP4 to Animated GIF](https://clipforge.vercel.app/tools/mp4-to-gif): Two-pass custom color palette GIF conversion with custom FPS and width.
 - [MOV & WebM to MP4 Converter](https://clipforge.vercel.app/tools/video-converter): Convert MOV, WebM, and MKV clips to universal H.264 MP4 with 9:16, 1:1, and 16:9 social presets.
 - [Video Frame & Thumbnail Extractor](https://clipforge.vercel.app/tools/video-frames): Scrub to exact timestamps and capture full-resolution PNG frames or batch extract frames every N seconds as ZIP.
+- [Merge & Join Videos](https://clipforge.vercel.app/tools/merge-videos): Stitch multiple MP4, MOV, or WebM clips into one normalized MP4—free for 2 clips, unlimited with Pro Annual.
 
 ## Audio Tools
 - [Extract or Mute Audio](https://clipforge.vercel.app/tools/extract-audio): Extract 192 kbps MP3 or lossless WAV audio from video, or strip audio losslessly.

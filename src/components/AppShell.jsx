@@ -20,6 +20,7 @@ import {
   Repeat,
   EyeOff,
   Camera,
+  Combine,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -33,6 +34,7 @@ const ICONS = {
   Film,
   Repeat,
   Camera,
+  Combine,
   VolumeX,
   AudioLines,
   Radio,
