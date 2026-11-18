@@ -40,12 +40,21 @@ export const metadata = {
     url: 'https://clipforge.vercel.app',
     siteName: 'ClipForge',
     type: 'website',
+    images: [
+      {
+        url: 'https://clipforge.vercel.app/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
     description:
       'Remove photo backgrounds with local AI, compress videos to exact MB, trim clips losslessly, and build 4x6 passport sheets right in your browser.',
+    images: ['https://clipforge.vercel.app/opengraph-image'],
   },
   robots: { index: true, follow: true },
   icons: { icon: '/favicon.svg' },
