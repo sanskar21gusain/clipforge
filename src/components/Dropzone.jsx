@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback, useId } from 'react';
 import { UploadCloud, ShieldCheck, Clipboard } from 'lucide-react';
+import { formatBytes } from '../lib/format';
 
 function matchesAccept(file, accept) {
   if (!accept) return true;
@@ -32,9 +33,18 @@ function matchesAccept(file, accept) {
   });
 }
 
+function getDefaultMaxBytes(accept) {
+  const acc = (accept || '').toLowerCase();
+  if (acc.includes('video')) return 400 * 1024 * 1024; // 400 MB
+  if (acc.includes('audio')) return 100 * 1024 * 1024; // 100 MB
+  if (acc.includes('image')) return 50 * 1024 * 1024;  // 50 MB
+  return 400 * 1024 * 1024;
+}
+
 export function Dropzone({
   accept,
   multiple = false,
+  maxBytes,
   onFiles,
   title = 'Select or drop your file',
   subtitle = 'Processed locally inside your browser — nothing is uploaded',
@@ -59,6 +69,24 @@ export function Dropzone({
         return;
       }
 
+      // Check for empty files (0 bytes)
+      const emptyFiles = valid.filter((f) => f.size === 0);
+      if (emptyFiles.length > 0) {
+        setRejectError('The selected file is empty (0 bytes). Please choose a valid file.');
+        return;
+      }
+
+      // Check for oversized files beyond in-browser memory budget
+      const limit = maxBytes || getDefaultMaxBytes(accept);
+      const oversizeFiles = valid.filter((f) => f.size > limit);
+      if (oversizeFiles.length > 0) {
+        const fileNames = oversizeFiles.map((f) => `${f.name} (${formatBytes(f.size)})`).join(', ');
+        setRejectError(
+          `File exceeds the ${formatBytes(limit)} in-browser limit: ${fileNames}. Please choose a smaller file so your browser tab stays fast and responsive.`
+        );
+        return;
+      }
+
       if (valid.length < list.length) {
         setRejectError(
           `Skipped ${list.length - valid.length} unsupported file${list.length - valid.length > 1 ? 's' : ''}.`
@@ -69,7 +97,7 @@ export function Dropzone({
 
       onFiles(multiple ? valid : [valid[0]]);
     },
-    [accept, multiple, onFiles]
+    [accept, multiple, maxBytes, onFiles]
   );
 
   useEffect(() => {

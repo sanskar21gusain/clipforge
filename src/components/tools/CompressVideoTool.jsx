@@ -7,6 +7,8 @@ import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '.
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 import { useStudio } from '../StudioProvider';
 
+const MAX_VIDEO_BYTES = 400 * 1024 * 1024; // 400 MB in-browser safety limit
+
 const PRESETS = [
   { id: 'discord', label: 'Discord (8 MB)', mb: 8 },
   { id: 'whatsapp', label: 'WhatsApp (16 MB)', mb: 16 },
@@ -49,11 +51,19 @@ export function CompressVideoTool() {
   const handleFiles = (files) => {
     const f = files[0];
     if (!f) return;
+    setError('');
+    if (f.size === 0) {
+      setError('This video file is empty (0 bytes). Please choose a valid video file.');
+      return;
+    }
+    if (f.size > MAX_VIDEO_BYTES) {
+      setError('This file exceeds 400 MB. Trim or shorten it first so your browser tab stays responsive.');
+      return;
+    }
     if (videoUrl) URL.revokeObjectURL(videoUrl);
     setFile(f);
     setVideoUrl(URL.createObjectURL(f));
     setOutputBlob(null);
-    setError('');
     setProgress(0);
   };
 

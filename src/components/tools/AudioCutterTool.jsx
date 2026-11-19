@@ -6,6 +6,8 @@ import { Dropzone } from '../Dropzone';
 import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
 
+const MAX_AUDIO_BYTES = 100 * 1024 * 1024; // 100 MB in-browser safety limit
+
 export function AudioCutterTool() {
   const canvasRef = useRef(null);
   const [file, setFile] = useState(null);
@@ -85,11 +87,19 @@ export function AudioCutterTool() {
   const handleFiles = async (files) => {
     const f = files[0];
     if (!f) return;
+    setError('');
+    if (f.size === 0) {
+      setError('This audio file is empty (0 bytes). Please choose a valid audio file.');
+      return;
+    }
+    if (f.size > MAX_AUDIO_BYTES) {
+      setError('This audio file exceeds 100 MB. Choose a shorter audio clip so your browser tab stays responsive.');
+      return;
+    }
     if (audioUrl) URL.revokeObjectURL(audioUrl);
     setFile(f);
     setAudioUrl(URL.createObjectURL(f));
     setOutputBlob(null);
-    setError('');
     await decodeWaveform(f);
   };
 

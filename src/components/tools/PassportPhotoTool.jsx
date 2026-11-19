@@ -20,6 +20,8 @@ const BG_TINTS = [
   { id: 'light-blue', label: 'Visa Light Blue', hex: '#e0f2fe' },
 ];
 
+const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB in-browser safety limit
+
 export function PassportPhotoTool() {
   const { isPro, openProModal, consumeHandoff } = useStudio();
   const previewCanvasRef = useRef(null);
@@ -51,6 +53,14 @@ export function PassportPhotoTool() {
     const f = files[0];
     if (!f) return;
     setError('');
+    if (f.size === 0) {
+      setError('This photo file is empty (0 bytes). Please choose a valid portrait photo.');
+      return;
+    }
+    if (f.size > MAX_IMAGE_BYTES) {
+      setError('This photo exceeds 50 MB. Choose a smaller image so your browser tab stays responsive.');
+      return;
+    }
     const url = URL.createObjectURL(f);
     const img = new Image();
     img.onload = () => {

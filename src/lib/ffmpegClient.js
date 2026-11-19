@@ -4,14 +4,10 @@ let ffmpegInstance = null;
 let loadPromise = null;
 let activeProgressCallback = null;
 
-const CORE_CDNS = [
-  'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd',
-  'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd',
-];
-
 /**
- * Lazily loads single-threaded FFmpeg.wasm with CDN fallback and a single
- * reusable progress listener so switching tools never leaks callbacks.
+ * Lazily loads single-threaded FFmpeg.wasm self-hosted directly from the app's
+ * own origin (/ffmpeg/) and provides a single reusable progress listener so
+ * switching tools never leaks callbacks.
  */
 export async function getFFmpeg(onProgress) {
   activeProgressCallback = typeof onProgress === 'function' ? onProgress : null;
@@ -34,20 +30,17 @@ export async function getFFmpeg(onProgress) {
         }
       });
 
-      let lastErr = null;
-      for (const baseURL of CORE_CDNS) {
-        try {
-          await ffmpeg.load({
-            coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-            wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-          });
-          ffmpegInstance = ffmpeg;
-          return ffmpeg;
-        } catch (err) {
-          lastErr = err;
-        }
-      }
-      throw lastErr || new Error('Failed to load FFmpeg WebAssembly core');
+      // Self-hosted from same origin under /ffmpeg/
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const baseURL = `${origin}/ffmpeg`;
+
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+      });
+
+      ffmpegInstance = ffmpeg;
+      return ffmpeg;
     })().catch((err) => {
       loadPromise = null;
       throw err;

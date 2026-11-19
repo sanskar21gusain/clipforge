@@ -7,6 +7,8 @@ import { downloadBlob, formatBytes, baseName } from '../../lib/format';
 import { copyImageBlobToClipboard } from '../../lib/clipboard';
 import { useStudio } from '../StudioProvider';
 
+const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB in-browser safety limit
+
 const BACKDROPS = [
   { id: 'transparent', label: 'Transparent', className: 'bg-checkerboard', fill: null },
   { id: 'white', label: 'Pure White', className: 'bg-white', fill: '#ffffff' },
@@ -42,6 +44,14 @@ export function BackgroundRemoverTool() {
     const file = files[0];
     if (!file) return;
     setError('');
+    if (file.size === 0) {
+      setError('This image file is empty (0 bytes). Please choose a valid image.');
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError('This image exceeds 50 MB. Choose a smaller photo so your browser tab stays responsive.');
+      return;
+    }
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
     if (resultUrl) URL.revokeObjectURL(resultUrl);
 

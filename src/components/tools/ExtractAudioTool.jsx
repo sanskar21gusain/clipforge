@@ -6,6 +6,8 @@ import { Dropzone } from '../Dropzone';
 import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 
+const MAX_VIDEO_BYTES = 400 * 1024 * 1024; // 400 MB in-browser safety limit
+
 export function ExtractAudioTool() {
   const [file, setFile] = useState(null);
   const [action, setAction] = useState('mp3'); // 'mp3' | 'wav' | 'mute'
@@ -71,8 +73,19 @@ export function ExtractAudioTool() {
     return (
       <Dropzone
         accept="video/*"
+        maxBytes={MAX_VIDEO_BYTES}
         onFiles={(files) => {
-          setFile(files[0]);
+          const f = files[0];
+          if (!f) return;
+          if (f.size === 0) {
+            setError('This video file is empty (0 bytes). Please choose a valid video file.');
+            return;
+          }
+          if (f.size > MAX_VIDEO_BYTES) {
+            setError('This file exceeds 400 MB. Trim or shorten it first so your browser tab stays responsive.');
+            return;
+          }
+          setFile(f);
           setOutputBlob(null);
           setError('');
         }}

@@ -19,6 +19,8 @@ const RATIOS = [
   { id: '9:16', label: '9:16 Reels/Shorts', w: 540, h: 960 },
 ];
 
+const MAX_AUDIO_BYTES = 100 * 1024 * 1024; // 100 MB in-browser safety limit
+
 export function AudioToVideoTool() {
   const { isPro, openProModal } = useStudio();
   const canvasRef = useRef(null);
@@ -239,9 +241,21 @@ export function AudioToVideoTool() {
     return (
       <Dropzone
         accept="audio/*"
+        maxBytes={MAX_AUDIO_BYTES}
         onFiles={(files) => {
-          setFile(files[0]);
+          const f = files[0];
+          if (!f) return;
+          if (f.size === 0) {
+            setError('This audio file is empty (0 bytes). Please choose a valid audio file.');
+            return;
+          }
+          if (f.size > MAX_AUDIO_BYTES) {
+            setError('This audio file exceeds 100 MB. Choose a shorter audio clip so your browser tab stays responsive.');
+            return;
+          }
+          setFile(f);
           setVideoBlob(null);
+          setError('');
         }}
         title="Drop an audio clip to turn into a waveform video"
         subtitle="Podcast highlights, voice notes, or music snippets rendered into crisp 16:9, 1:1, or 9:16 videos."

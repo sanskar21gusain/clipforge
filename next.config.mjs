@@ -7,6 +7,13 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/ffmpeg/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ],
+      },
+      {
         source: '/(.*)',
         headers: [
           { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -17,9 +24,9 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://va.vercel-scripts.com https://cdn.jsdelivr.net https://unpkg.com",
+              "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://va.vercel-scripts.com",
               "worker-src 'self' blob:",
-              "connect-src 'self' blob: data: https://cdn.jsdelivr.net https://unpkg.com https://staticimgly.com https://api.polar.sh https://vitals.vercel-insights.com",
+              "connect-src 'self' blob: data: https://staticimgly.com https://api.polar.sh https://vitals.vercel-insights.com",
               "img-src 'self' blob: data:",
               "media-src 'self' blob: data:",
               "style-src 'self' 'unsafe-inline'",

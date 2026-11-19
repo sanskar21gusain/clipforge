@@ -7,6 +7,8 @@ import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 import { copyImageBlobToClipboard } from '../../lib/clipboard';
 import { useStudio } from '../StudioProvider';
 
+const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB in-browser safety limit
+
 async function encodeCanvasToTargetKb(img, mime, maxWidth, exactKb, quality) {
   let width = img.naturalWidth;
   let height = img.naturalHeight;
@@ -100,7 +102,11 @@ export function ImageStudioTool() {
   const extFor = (m) => (m === 'image/png' ? 'png' : m === 'image/jpeg' ? 'jpg' : 'webp');
 
   const handleFiles = (files) => {
-    const mapped = files.map((file, idx) => ({
+    const valid = files.filter((f) => f.size > 0 && f.size <= MAX_IMAGE_BYTES);
+    if (valid.length < files.length) {
+      setCopyMsg(`Skipped ${files.length - valid.length} file(s) that were empty or exceeded 50 MB.`);
+    }
+    const mapped = valid.map((file, idx) => ({
       id: `${Date.now()}-${idx}-${file.name}`,
       file,
       outBlob: null,
