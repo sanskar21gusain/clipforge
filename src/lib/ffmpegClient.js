@@ -24,6 +24,9 @@ export async function getFFmpeg(onProgress) {
       ]);
 
       const ffmpeg = new FFmpeg();
+      ffmpeg.on('log', ({ message }) => {
+        console.log('[FFMPEG]', message);
+      });
       ffmpeg.on('progress', ({ progress }) => {
         if (activeProgressCallback && Number.isFinite(progress)) {
           activeProgressCallback(Math.max(0, Math.min(100, Math.round(progress * 100))));

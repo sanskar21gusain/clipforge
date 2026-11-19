@@ -118,14 +118,15 @@ export function VideoConverterTool() {
         vf =
           fitMode === 'crop'
             ? `scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}`
-            : `scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2:color=#0f172a`;
+            : `scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2:color=0x0f172a`;
       } else if (resolution === '720p') {
-        vf = "scale='min(1280,iw)':-2,scale=trunc(iw/2)*2:trunc(ih/2)*2";
+        vf = 'scale=trunc(iw/2)*2:trunc(ih/2)*2';
       }
 
       const crf = resolution === '1080p' ? '20' : '23';
       const exitCode = await ffmpeg.exec([
         '-i', inputName,
+        '-r', '30',
         '-vf', vf,
         '-c:v', 'libx264',
         '-pix_fmt', 'yuv420p',

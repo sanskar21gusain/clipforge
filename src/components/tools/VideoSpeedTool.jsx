@@ -121,6 +121,7 @@ export function VideoSpeedTool() {
       if (!muteAudio) {
         const args = [
           '-i', inputName,
+          '-r', '30',
           '-vf', vf,
           ...(aParts.length > 0 ? ['-af', aParts.join(',')] : []),
           '-c:v', 'libx264',
@@ -140,6 +141,7 @@ export function VideoSpeedTool() {
         await ffmpeg.deleteFile(outputName).catch(() => {});
         exitCode = await ffmpeg.exec([
           '-i', inputName,
+          '-r', '30',
           '-vf', vf,
           '-c:v', 'libx264',
           '-pix_fmt', 'yuv420p',

@@ -24,7 +24,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: https://va.vercel-scripts.com",
               "worker-src 'self' blob:",
               "connect-src 'self' blob: data: https://staticimgly.com https://api.polar.sh https://vitals.vercel-insights.com",
               "img-src 'self' blob: data:",

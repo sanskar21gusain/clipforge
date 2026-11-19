@@ -154,7 +154,7 @@ export function MergeVideosTool() {
 
       for (let i = 0; i < n; i++) {
         vFilters.push(
-          `[${i}:v]scale=${fmt.w}:${fmt.h}:force_original_aspect_ratio=decrease,pad=${fmt.w}:${fmt.h}:(ow-iw)/2:(oh-ih)/2:color=#0f172a,setsar=1,fps=30,format=yuv420p[v${i}]`
+          `[${i}:v]scale=${fmt.w}:${fmt.h}:force_original_aspect_ratio=decrease,pad=${fmt.w}:${fmt.h}:(ow-iw)/2:(oh-ih)/2:color=0x0f172a,setsar=1,fps=30,format=yuv420p[v${i}]`
         );
         aFilters.push(`[${i}:a]aformat=sample_rates=44100:channel_layouts=stereo[a${i}]`);
         avConcatInputs.push(`[v${i}][a${i}]`);

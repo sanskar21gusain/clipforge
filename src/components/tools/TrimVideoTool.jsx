@@ -74,7 +74,7 @@ export function TrimVideoTool() {
       const args =
         mode === 'fast'
           ? ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-c', 'copy', outputName]
-          : ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'veryfast', '-c:a', 'aac', '-movflags', '+faststart', outputName];
+          : ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-r', '30', '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'veryfast', '-c:a', 'aac', '-movflags', '+faststart', outputName];
 
       const exitCode = await ffmpeg.exec(args);
       if (exitCode !== 0) {
