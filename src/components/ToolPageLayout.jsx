@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ChevronRight, ShieldCheck, CheckCircle2, HelpCircle } from 'lucide-react';
+import { ChevronRight, CheckCircle2, HelpCircle } from 'lucide-react';
 import { TOOLS } from '../lib/tools';
 
 export function ToolPageLayout({ tool, children }) {
@@ -50,11 +50,6 @@ export function ToolPageLayout({ tool, children }) {
         <p className="max-w-2xl text-base text-ink-500 leading-relaxed">
           {tool.tagline}
         </p>
-
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-          <ShieldCheck size={14} className="text-emerald-600" />
-          <span>{tool.privacyNote}</span>
-        </div>
       </header>
 
       {/* Main Tool Workbench Surface */}

@@ -1,12 +1,12 @@
 # ClipForge — Free On-Device Video, Audio & Photo Studio
 
-> ClipForge is a bright, privacy-first browser media studio that runs video, audio, and photo tools locally inside the browser using FFmpeg WebAssembly, Web Audio API, HTML5 Canvas, and on-device ONNX AI models. No file uploads, no mandatory sign-up.
+> ClipForge is a bright, privacy-first browser media studio that runs video, audio, and photo tools locally inside the browser. No file uploads, no mandatory sign-up.
 
 ## Studio Directory
 - [ClipForge Home — All 14 Browser Media Tools](https://clipforge.vercel.app/): Browse and search all video, audio, and photo tools.
 
 ## Video Tools
-- [Compress Video to Size](https://clipforge.vercel.app/tools/compress-video): Shrink MP4, MOV, or WebM videos to exact MB targets (8MB Discord, 16MB WhatsApp, 25MB Email, Custom MB) locally via FFmpeg.wasm.
+- [Compress Video to Size](https://clipforge.vercel.app/tools/compress-video): Shrink MP4, MOV, or WebM videos to exact MB targets (8MB Discord, 16MB WhatsApp, 25MB Email, Custom MB) locally in your browser.
 - [Video Trimmer & Cutter](https://clipforge.vercel.app/tools/trim-video): Instant lossless stream-copy or frame-accurate H.264 video cutting right in your browser.
 - [MP4 to Animated GIF](https://clipforge.vercel.app/tools/mp4-to-gif): Two-pass custom color palette GIF conversion with custom FPS and width.
 - [MOV & WebM to MP4 Converter](https://clipforge.vercel.app/tools/video-converter): Convert MOV, WebM, and MKV clips to universal H.264 MP4 with 9:16, 1:1, and 16:9 social presets.

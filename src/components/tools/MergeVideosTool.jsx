@@ -121,7 +121,7 @@ export function MergeVideosTool() {
     setError('');
     setOutputBlob(null);
     setProgress(8);
-    setStatus('Loading FFmpeg engine in browser...');
+    setStatus('Preparing video engine...');
 
     const writtenNames = [];
     const outputName = 'merged.mp4';

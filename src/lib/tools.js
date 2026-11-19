@@ -36,8 +36,8 @@ export const TOOLS = [
     icon: 'Minimize2',
     tagline: 'Shrink MP4, MOV, or WebM videos to fit exact size limits like 8MB Discord, 16MB WhatsApp, or 25MB Email.',
     seoTitle: 'Compress Video to 10MB, 16MB or 25MB Free (No Upload) | ClipForge',
-    seoDescription: 'Compress MP4 and MOV videos to an exact target file size right in your browser using FFmpeg WebAssembly. Private, fast, and watermark-free.',
-    privacyNote: 'Powered by FFmpeg WebAssembly inside your browser tab. Zero video uploads.',
+    seoDescription: 'Compress MP4 and MOV videos to an exact target file size right in your browser. Private, fast, and watermark-free.',
+    privacyNote: 'Processed 100% locally on your device.',
     steps: [
       { title: 'Choose your video file', body: 'Drag and drop an MP4, MOV, or WebM video from your computer.' },
       { title: 'Pick a target file size', body: 'Select Discord (8MB), WhatsApp (16MB), Email (25MB), or type a custom MB target.' },
@@ -58,7 +58,7 @@ export const TOOLS = [
     tagline: 'Cut video clips with lossless instant stream-copy or frame-accurate H.264 re-encoding—100% locally.',
     seoTitle: 'Free Online Video Trimmer — Lossless & Frame-Accurate | ClipForge',
     seoDescription: 'Trim MP4, MOV, and WebM clips directly in your browser without uploading. Supports instant lossless cutting and accurate re-encoding.',
-    privacyNote: 'All cutting and remuxing happens locally on your CPU via WebAssembly.',
+    privacyNote: 'All cutting and remuxing happens locally on your device.',
     steps: [
       { title: 'Load your clip', body: 'Drop any video file to inspect it in the interactive bright studio player.' },
       { title: 'Set start & end points', body: 'Use the precision range controls or click "Set to Current Time" while scrubbing.' },
@@ -78,14 +78,14 @@ export const TOOLS = [
     tagline: 'Convert short video clips into sharp, color-accurate animated GIFs with custom FPS and width.',
     seoTitle: 'MP4 to GIF Converter — High-Quality Palette, No Watermark | ClipForge',
     seoDescription: 'Turn MP4 and MOV clips into crisp, lightweight animated GIFs right in your browser with two-pass color palette generation.',
-    privacyNote: 'Two-pass FFmpeg palette rendering happens entirely inside your browser.',
+    privacyNote: 'High-color palette rendering happens entirely inside your browser.',
     steps: [
       { title: 'Select a video clip', body: 'Drop an MP4, MOV, or WebM recording.' },
       { title: 'Tune clip range, FPS & width', body: 'Pick the exact seconds to convert, choose 10–24 FPS, and set width (360px–720px).' },
       { title: 'Render sharp GIF', body: 'ClipForge builds a custom 256-color palette for smooth gradients and downloads your GIF immediately.' },
     ],
     faqs: [
-      { q: 'Why do these GIFs look sharper than normal converters?', a: 'ClipForge uses FFmpeg two-pass palettegen/paletteuse filters, generating a dedicated color table specifically for your clip.' },
+      { q: 'Why do these GIFs look sharper than normal converters?', a: 'ClipForge uses two-pass color analysis, generating a dedicated color table specifically for your clip.' },
     ],
   },
   {
@@ -98,7 +98,7 @@ export const TOOLS = [
     tagline: 'Convert iPhone MOV, Chrome WebM, or MKV videos into universal H.264 MP4 with 9:16, 1:1 & 16:9 social presets.',
     seoTitle: 'Free MOV & WebM to MP4 Converter + 9:16 Social Resizer | ClipForge',
     seoDescription: 'Convert MOV, WebM, and MKV videos to universal H.264 MP4 and resize for Reels (9:16), Square (1:1), or YouTube (16:9) locally in your browser.',
-    privacyNote: 'H.264 MP4 conversion and social framing run locally via FFmpeg WebAssembly.',
+    privacyNote: 'Universal MP4 conversion and social framing run locally on your device.',
     steps: [
       { title: 'Drop your MOV, WebM, or MKV clip', body: 'Select any screen recording, iPhone clip, or web video directly from your device.' },
       { title: 'Choose social aspect ratio & fit', body: 'Keep the original aspect ratio or reframe cleanly to 9:16 Reels, 1:1 Square, or 16:9 Landscape.' },
@@ -119,7 +119,7 @@ export const TOOLS = [
     tagline: 'Scrub to any millisecond of a video and export a full-resolution PNG frame—or batch extract frames as a ZIP.',
     seoTitle: 'Free Video Frame & Thumbnail Extractor (Full-Res PNG) | ClipForge',
     seoDescription: 'Extract full-resolution PNG thumbnails and still frames from MP4, MOV, or WebM videos right in your browser with millisecond scrubbing and batch ZIP export.',
-    privacyNote: 'Frame capture runs directly via HTML5 Video and Canvas with zero server uploads.',
+    privacyNote: 'Frame capture runs directly inside your browser.',
     steps: [
       { title: 'Load your video clip', body: 'Drop any MP4, MOV, or WebM video directly from your device.' },
       { title: 'Scrub to the exact frame', body: 'Use the precision slider or -0.1s / +0.1s nudge buttons to land on the exact moment.' },
@@ -139,7 +139,7 @@ export const TOOLS = [
     tagline: 'Combine multiple MP4, MOV, or WebM clips into one seamless video—free for 2 clips, unlimited with Pro Annual.',
     seoTitle: 'Free Online Video Merger & Joiner (No Upload, No Watermark) | ClipForge',
     seoDescription: 'Join and merge multiple MP4, MOV, and WebM clips into one smooth H.264 MP4 right in your browser with automatic resolution normalization.',
-    privacyNote: 'Multi-clip normalization and stitching happen entirely inside your browser via FFmpeg WebAssembly.',
+    privacyNote: 'Multi-clip normalization and stitching happen entirely inside your browser.',
     steps: [
       { title: 'Add 2 or more video clips', body: 'Drop MP4, MOV, or WebM clips and arrange them in your exact playback order.' },
       { title: 'Pick output resolution', body: 'Choose 16:9 HD, 9:16 Vertical, or Pro 1080p Full HD—mixed clip sizes normalize automatically.' },
@@ -159,15 +159,15 @@ export const TOOLS = [
     icon: 'Gauge',
     tagline: 'Speed up videos into 2×–4× timelapses, slow down to 0.25× slow-motion, or reverse playback right in your browser.',
     seoTitle: 'Free Online Video Speed Changer (0.25x–4x) & Reverse | ClipForge',
-    seoDescription: 'Change video playback speed from 0.25x slow-motion to 4x timelapse or reverse video and audio locally in your browser with FFmpeg WebAssembly.',
-    privacyNote: 'Speed scaling and frame reversal execute locally via FFmpeg WebAssembly—zero cloud uploads.',
+    seoDescription: 'Change video playback speed from 0.25x slow-motion to 4x timelapse or reverse video and audio locally in your browser.',
+    privacyNote: 'Speed scaling and frame reversal execute locally on your device.',
     steps: [
       { title: 'Select a video clip', body: 'Drop any MP4, MOV, or WebM clip directly from your device.' },
       { title: 'Choose speed & reverse options', body: 'Pick 0.25× slow-mo up to 4× timelapse, and optionally toggle Reverse or Mute Audio.' },
       { title: 'Render & download MP4', body: 'ClipForge adjusts video timestamps and audio tempo in sync and exports a clean MP4.' },
     ],
     faqs: [
-      { q: 'Does audio stay synchronized when changing speed?', a: 'Yes. ClipForge chains FFmpeg atempo filters so speech and music stay in sync from 0.25× to 4× speed, or you can toggle Mute Audio.' },
+      { q: 'Does audio stay synchronized when changing speed?', a: 'Yes. ClipForge synchronizes audio pitch and tempo seamlessly so speech and music stay in sync from 0.25× to 4× speed, or you can toggle Mute Audio.' },
     ],
   },
   {
@@ -207,7 +207,7 @@ export const TOOLS = [
       { title: 'Export MP3 or WAV', body: 'Render and download your mastered clip immediately.' },
     ],
     faqs: [
-      { q: 'Will boosting volume cause harsh clipping?', a: 'ClipForge applies clean FFmpeg volume scaling with optional soft fades so voice clips and music stay crisp.' },
+      { q: 'Will boosting volume cause harsh clipping?', a: 'ClipForge applies clean volume scaling with optional soft fades so voice clips and music stay crisp.' },
     ],
   },
   {
@@ -220,7 +220,7 @@ export const TOOLS = [
     tagline: 'Turn podcasts, voice notes, or music snippets into bright animated waveform videos for Reels, Shorts & X.',
     seoTitle: 'Audio to Waveform Video Maker for Reels, Shorts & Podcasts | ClipForge',
     seoDescription: 'Convert MP3 or WAV audio into an animated audiogram video with custom titles, bright gradients, and 9:16, 1:1, or 16:9 aspect ratios.',
-    privacyNote: 'Real-time Canvas visualization and video capture run directly in your browser.',
+    privacyNote: 'Real-time visualization and video recording run directly in your browser.',
     steps: [
       { title: 'Drop your audio clip', body: 'Upload any podcast highlight, voiceover, or music clip.' },
       { title: 'Customize title, ratio & backdrop', body: 'Pick 16:9 Landscape, 1:1 Square, or 9:16 Vertical Reels, set your title, and choose a daylight gradient.' },
@@ -240,7 +240,7 @@ export const TOOLS = [
     tagline: 'Batch convert JPG/PNG/WebP, resize pixels, strip EXIF metadata, or hit exact file sizes like 50KB or 200KB.',
     seoTitle: 'Compress Image to Exact KB (50KB, 100KB, 200KB) & Convert Free | ClipForge',
     seoDescription: 'Batch compress images to exact KB targets, convert between JPG, PNG, and WebP, resize dimensions, and download as ZIP—100% private.',
-    privacyNote: 'HTML5 Canvas processes all images locally in memory. Zero cloud uploads.',
+    privacyNote: 'Image optimization processes locally on your device.',
     steps: [
       { title: 'Drop one or multiple photos', body: 'Select a single photo or batch-drop dozens of JPG, PNG, or WebP files.' },
       { title: 'Choose format, resize or exact KB target', body: 'Pick target format or turn on Exact KB mode (e.g., 50KB or 100KB) for strict upload forms.' },
@@ -280,15 +280,15 @@ export const TOOLS = [
     tagline: 'Permanently blur, pixelate, or black-box faces, license plates, emails, and API keys—flattened with EXIF/GPS stripped.',
     seoTitle: 'Free Blur & Redact Photo Tool — Irreversible & EXIF-Free | ClipForge',
     seoDescription: 'Blur, pixelate, or permanently black-box sensitive details in photos and screenshots right in your browser. Zero cloud uploads and automatic EXIF/GPS stripping.',
-    privacyNote: 'Redaction burns pixels permanently onto a fresh local canvas—zero server uploads and all EXIF/GPS metadata stripped.',
+    privacyNote: 'Redaction permanently destroys pixels locally—all EXIF/GPS metadata is stripped.',
     steps: [
       { title: 'Drop or paste your photo', body: 'Open any screenshot, ID photo, or document image locally in your browser.' },
       { title: 'Draw over sensitive regions', body: 'Choose Solid Black Box, Pixelate Mosaic, or Heavy Blur and drag rectangles over private details.' },
       { title: 'Export flattened clean image', body: 'Download a clean PNG or JPG with redacted pixels permanently destroyed and all EXIF/GPS metadata removed.' },
     ],
     faqs: [
-      { q: 'Can someone undo the blur or black box in the exported file?', a: 'No. ClipForge bakes every redaction directly onto a flattened pixel canvas before encoding a brand-new PNG or JPG, permanently destroying the original pixel data inside each redacted region.' },
-      { q: 'Does exporting remove camera EXIF and GPS location data?', a: 'Yes. Re-encoding through HTML5 Canvas automatically strips all EXIF, camera model, timestamp, and GPS coordinates.' },
+      { q: 'Can someone undo the blur or black box in the exported file?', a: 'No. ClipForge bakes every redaction directly onto a flattened image before encoding, permanently destroying the original pixel data inside each redacted region.' },
+      { q: 'Does exporting remove camera EXIF and GPS location data?', a: 'Yes. Re-encoding automatically strips all EXIF, camera model, timestamp, and GPS coordinates.' },
     ],
   },
 ];

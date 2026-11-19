@@ -63,7 +63,7 @@ export function CompressVideoTool() {
     setError('');
     setOutputBlob(null);
     setProgress(5);
-    setStatus('Loading FFmpeg engine in browser...');
+    setStatus('Preparing video...');
 
     try {
       const ffmpeg = await getFFmpeg((pct) => {

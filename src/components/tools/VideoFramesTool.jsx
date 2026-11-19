@@ -205,7 +205,7 @@ export function VideoFramesTool() {
           accept="video/*"
           onFiles={handleFiles}
           title="Drop a video to extract full-resolution frames & thumbnails"
-          subtitle="Scrub to any millisecond and export crisp full-resolution PNG frames instantly—zero FFmpeg wait."
+          subtitle="Scrub to any millisecond and export crisp full-resolution PNG frames instantly."
           allowPaste={false}
         />
         {error && (

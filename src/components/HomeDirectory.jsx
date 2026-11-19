@@ -206,7 +206,7 @@ export function HomeDirectory() {
           {
             icon: ShieldCheck,
             title: 'Your Files Stay Private',
-            body: 'FFmpeg WebAssembly, Web Audio, Canvas, and on-device ONNX models execute directly inside your browser tab.',
+            body: 'All media processing runs directly on your device. Your videos, audio, and photos are never uploaded to any server.',
           },
           {
             icon: Zap,

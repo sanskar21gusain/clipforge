@@ -91,7 +91,7 @@ export function VideoConverterTool() {
     setError('');
     setOutputBlob(null);
     setProgress(8);
-    setStatus('Loading FFmpeg engine in browser...');
+    setStatus('Preparing video...');
 
     try {
       const ffmpeg = await getFFmpeg((pct) => {
