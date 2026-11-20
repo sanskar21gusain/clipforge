@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Scissors, Download, Loader2, RefreshCw, Zap, Target, ArrowRight } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, getAdaptiveFramerateArgs, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
 import { useStudio } from '../StudioProvider';
 
@@ -39,7 +39,7 @@ export function TrimVideoTool() {
       return;
     }
     if (f.size > MAX_VIDEO_BYTES) {
-      setError('This file exceeds 400 MB. Trim or shorten it first so your browser tab stays responsive.');
+      setError('This file exceeds 400 MB. Browser WebAssembly memory safely trims videos up to 400 MB locally without cloud uploads. Please select a smaller file.');
       return;
     }
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -70,11 +70,12 @@ export function TrimVideoTool() {
 
       await ffmpeg.writeFile(inputName, await fileToUint8Array(file));
       const clipDuration = (end - start).toFixed(2);
+      const rArgs = mode === 'fast' ? [] : await getAdaptiveFramerateArgs(ffmpeg, inputName);
 
       const args =
         mode === 'fast'
           ? ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-c', 'copy', outputName]
-          : ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, '-r', '30', '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'veryfast', '-c:a', 'aac', '-movflags', '+faststart', outputName];
+          : ['-ss', start.toFixed(2), '-i', inputName, '-t', clipDuration, ...rArgs, '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'veryfast', '-c:a', 'aac', '-movflags', '+faststart', outputName];
 
       const exitCode = await ffmpeg.exec(args);
       if (exitCode !== 0) {
@@ -89,11 +90,18 @@ export function TrimVideoTool() {
       await ffmpeg.deleteFile(outputName).catch(() => {});
     } catch (err) {
       console.error(err);
-      setError('Could not trim this clip. Try Accurate Re-Encode mode if Fast Copy fails on this codec.');
+      setError('Could not trim this clip or operation was cancelled.');
     } finally {
       clearFFmpegProgress();
       setProcessing(false);
     }
+  };
+
+  const handleCancel = async () => {
+    await terminateFFmpeg();
+    setProcessing(false);
+    setProgress(0);
+    setError('Trimming cancelled. Memory freed.');
   };
 
   if (!file) {
@@ -252,10 +260,31 @@ export function TrimVideoTool() {
         </button>
       </div>
 
+      {/* Progress Bar with Cancel Button */}
       {processing && (
-        <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs font-bold text-blue-800">
-          <Loader2 size={15} className="animate-spin" />
-          <span>Trimming clip locally ({progress}%)...</span>
+        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-blue-800">
+            <span className="inline-flex items-center gap-2">
+              <Loader2 size={14} className="animate-spin" />
+              <span>Trimming clip locally...</span>
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{progress}%</span>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="rounded-lg bg-white border border-rose-200 hover:bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shadow-xs transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-blue-100">
+            <div
+              className="h-full bg-blue-600 transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       )}
 

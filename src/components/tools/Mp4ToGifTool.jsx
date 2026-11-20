@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Film, Download, Loader2, RefreshCw } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
 import { useStudio } from '../StudioProvider';
 
@@ -53,7 +53,7 @@ export function Mp4ToGifTool() {
       return;
     }
     if (f.size > MAX_VIDEO_BYTES) {
-      setError('This file exceeds 400 MB. Trim or shorten it first so your browser tab stays responsive.');
+      setError('This file exceeds 400 MB. Browser WebAssembly memory safely converts videos up to 400 MB locally without cloud uploads. Please select a smaller file.');
       return;
     }
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -108,11 +108,19 @@ export function Mp4ToGifTool() {
       await ffmpeg.deleteFile(outName).catch(() => {});
     } catch (err) {
       console.error(err);
-      setError('GIF rendering failed. Try a shorter duration (3–10 seconds) or 480px width.');
+      setError('GIF rendering failed or was cancelled. Try a shorter duration (3–10 seconds) or 480px width.');
     } finally {
       clearFFmpegProgress();
       setProcessing(false);
     }
+  };
+
+  const handleCancel = async () => {
+    await terminateFFmpeg();
+    clearFFmpegProgress();
+    setProcessing(false);
+    setProgress(0);
+    setError('GIF rendering cancelled. Memory freed.');
   };
 
   if (!file) {
@@ -248,15 +256,39 @@ export function Mp4ToGifTool() {
             </div>
           </div>
 
-          <button
-            type="button"
-            disabled={processing}
-            onClick={handleConvert}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 py-2.5 text-sm font-bold text-white cursor-pointer"
-          >
-            {processing ? <Loader2 size={16} className="animate-spin" /> : <Film size={16} />}
-            <span>{processing ? `Rendering GIF (${progress}%)...` : 'Create High-Quality GIF'}</span>
-          </button>
+          {processing ? (
+            <div className="flex flex-col gap-2 rounded-xl border border-blue-200 bg-blue-50/70 p-3">
+              <div className="flex items-center justify-between text-xs font-bold text-blue-800">
+                <span className="inline-flex items-center gap-1.5">
+                  <Loader2 size={14} className="animate-spin" />
+                  <span>Rendering GIF...</span>
+                </span>
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono">{progress}%</span>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="rounded-md bg-white border border-rose-200 hover:bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 cursor-pointer shadow-xs"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-blue-100">
+                <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              disabled={processing}
+              onClick={handleConvert}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 py-2.5 text-sm font-bold text-white cursor-pointer"
+            >
+              <Film size={16} />
+              <span>Create High-Quality GIF</span>
+            </button>
+          )}
         </div>
       </div>
 

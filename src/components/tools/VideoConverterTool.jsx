@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Repeat, Download, Loader2, RefreshCw, Crown, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, getAdaptiveFramerateArgs, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 import { useStudio } from '../StudioProvider';
 
@@ -48,7 +48,7 @@ export function VideoConverterTool() {
       return;
     }
     if (f.size > MAX_FILE_BYTES) {
-      setError('This file exceeds 400 MB. Trim or shorten it first so your browser tab stays responsive.');
+      setError('This file exceeds 400 MB. Browser WebAssembly memory safely converts videos up to 400 MB locally without cloud uploads. Please select a smaller file.');
       return;
     }
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -123,10 +123,14 @@ export function VideoConverterTool() {
         vf = 'scale=trunc(iw/2)*2:trunc(ih/2)*2';
       }
 
+      setStatus('Analyzing video framerate...');
+      const rArgs = await getAdaptiveFramerateArgs(ffmpeg, inputName);
+      setStatus('Converting to universal H.264 MP4...');
+
       const crf = resolution === '1080p' ? '20' : '23';
       const exitCode = await ffmpeg.exec([
         '-i', inputName,
-        '-r', '30',
+        ...rArgs,
         '-vf', vf,
         '-c:v', 'libx264',
         '-pix_fmt', 'yuv420p',
@@ -153,7 +157,7 @@ export function VideoConverterTool() {
     } catch (err) {
       if (runId !== runIdRef.current) return;
       console.error(err);
-      setError('Could not convert this video in browser. Ensure it is a valid MOV, WebM, MKV, or MP4 file.');
+      setError('Could not convert this video or operation was cancelled. Ensure it is a valid MOV, WebM, MKV, or MP4 file.');
     } finally {
       if (runId === runIdRef.current) {
         clearFFmpegProgress();
@@ -161,6 +165,17 @@ export function VideoConverterTool() {
         setProcessing(false);
       }
     }
+  };
+
+  const handleCancel = async () => {
+    runIdRef.current += 1;
+    await terminateFFmpeg();
+    clearFFmpegProgress();
+    processingRef.current = false;
+    setProcessing(false);
+    setProgress(0);
+    setStatus('');
+    setError('Conversion cancelled. Memory freed.');
   };
 
   if (!file) {
@@ -298,14 +313,24 @@ export function VideoConverterTool() {
         </div>
       </div>
 
+      {/* Progress Bar with Cancel Button */}
       {processing && (
-        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2">
+        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2.5">
           <div className="flex items-center justify-between text-xs font-bold text-blue-800">
             <span className="inline-flex items-center gap-2">
               <Loader2 size={14} className="animate-spin" />
               <span>{status}</span>
             </span>
-            <span className="font-mono">{progress}%</span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{progress}%</span>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="rounded-lg bg-white border border-rose-200 hover:bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shadow-xs transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-blue-100">
             <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />

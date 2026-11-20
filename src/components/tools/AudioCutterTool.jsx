@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AudioLines, Download, Loader2, RefreshCw, Volume2 } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, formatTime, downloadBlob, baseName } from '../../lib/format';
 
 const MAX_AUDIO_BYTES = 100 * 1024 * 1024; // 100 MB in-browser safety limit
@@ -93,7 +93,7 @@ export function AudioCutterTool() {
       return;
     }
     if (f.size > MAX_AUDIO_BYTES) {
-      setError('This audio file exceeds 100 MB. Choose a shorter audio clip so your browser tab stays responsive.');
+      setError('This audio file exceeds 100 MB. Browser WebAssembly memory safely edits audio up to 100 MB locally without cloud uploads. Please select a smaller file.');
       return;
     }
     if (audioUrl) URL.revokeObjectURL(audioUrl);
@@ -155,11 +155,19 @@ export function AudioCutterTool() {
       await ffmpeg.deleteFile(outName).catch(() => {});
     } catch (err) {
       console.error(err);
-      setError('Audio processing failed in browser. Try MP3 or WAV input.');
+      setError('Audio processing failed or was cancelled. Try MP3 or WAV input.');
     } finally {
       clearFFmpegProgress();
       setProcessing(false);
     }
+  };
+
+  const handleCancel = async () => {
+    await terminateFFmpeg();
+    clearFFmpegProgress();
+    setProcessing(false);
+    setProgress(0);
+    setError('Audio processing cancelled. Memory freed.');
   };
 
   if (!file) {
@@ -296,6 +304,34 @@ export function AudioCutterTool() {
         </div>
       )}
 
+      {/* Progress Bar with Cancel Button */}
+      {processing && (
+        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-blue-800">
+            <span className="inline-flex items-center gap-2">
+              <Loader2 size={14} className="animate-spin" />
+              <span>Rendering audio track...</span>
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{progress}%</span>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="rounded-lg bg-white border border-rose-200 hover:bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shadow-xs transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-blue-100">
+            <div
+              className="h-full bg-blue-600 transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           type="button"
@@ -304,7 +340,7 @@ export function AudioCutterTool() {
           className="inline-flex items-center gap-2 rounded-xl bg-ink-900 hover:bg-ink-700 disabled:opacity-50 px-5 py-2.5 text-sm font-bold text-white cursor-pointer"
         >
           {processing ? <Loader2 size={15} className="animate-spin" /> : <AudioLines size={15} />}
-          <span>{processing ? `Rendering (${progress}%)...` : `Export ${format.toUpperCase()}`}</span>
+          <span>{processing ? 'Processing...' : `Export ${format.toUpperCase()}`}</span>
         </button>
 
         {outputBlob && (

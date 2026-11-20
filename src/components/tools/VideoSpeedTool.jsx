@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Gauge, Download, Loader2, RefreshCw, RotateCcw, CheckCircle2 } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, getAdaptiveFramerateArgs, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 
 const MAX_VIDEO_BYTES = 350 * 1024 * 1024;
@@ -55,7 +55,7 @@ export function VideoSpeedTool() {
       return;
     }
     if (f.size > MAX_VIDEO_BYTES) {
-      setError('Video exceeds 350 MB limit. Trim it first so your browser tab stays responsive.');
+      setError('This file exceeds 350 MB. Browser WebAssembly memory safely speeds up videos up to 350 MB locally without cloud uploads. Please select a smaller file.');
       return;
     }
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -117,11 +117,13 @@ export function VideoSpeedTool() {
       if (atempo) aParts.push(atempo);
       if (reverse) aParts.push('areverse');
 
+      const rArgs = await getAdaptiveFramerateArgs(ffmpeg, inputName);
+
       let exitCode = 1;
       if (!muteAudio) {
         const args = [
           '-i', inputName,
-          '-r', '30',
+          ...rArgs,
           '-vf', vf,
           ...(aParts.length > 0 ? ['-af', aParts.join(',')] : []),
           '-c:v', 'libx264',
@@ -141,7 +143,7 @@ export function VideoSpeedTool() {
         await ffmpeg.deleteFile(outputName).catch(() => {});
         exitCode = await ffmpeg.exec([
           '-i', inputName,
-          '-r', '30',
+          ...rArgs,
           '-vf', vf,
           '-c:v', 'libx264',
           '-pix_fmt', 'yuv420p',
@@ -164,7 +166,7 @@ export function VideoSpeedTool() {
     } catch (err) {
       if (runId !== runIdRef.current) return;
       console.error(err);
-      setError('Could not adjust video speed in browser. Try a shorter clip or disable Reverse.');
+      setError('Could not adjust video speed or operation was cancelled.');
     } finally {
       if (ffmpeg) {
         await ffmpeg.deleteFile(inputName).catch(() => {});
@@ -176,6 +178,16 @@ export function VideoSpeedTool() {
         setProcessing(false);
       }
     }
+  };
+
+  const handleCancel = async () => {
+    runIdRef.current += 1;
+    await terminateFFmpeg();
+    clearFFmpegProgress();
+    processingRef.current = false;
+    setProcessing(false);
+    setProgress(0);
+    setError('Speed processing cancelled. Memory freed.');
   };
 
   if (!file) {
@@ -278,10 +290,31 @@ export function VideoSpeedTool() {
         </label>
       </div>
 
+      {/* Progress Bar with Cancel Button */}
       {processing && (
-        <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs font-bold text-blue-800">
-          <Loader2 size={15} className="animate-spin" />
-          <span>Rendering {speed}× {reverse ? 'reversed ' : ''}video ({progress}%)...</span>
+        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-blue-800">
+            <span className="inline-flex items-center gap-2">
+              <Loader2 size={14} className="animate-spin" />
+              <span>Rendering {speed}× {reverse ? 'reversed ' : ''}video...</span>
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{progress}%</span>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="rounded-lg bg-white border border-rose-200 hover:bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shadow-xs transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-blue-100">
+            <div
+              className="h-full bg-blue-600 transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       )}
 

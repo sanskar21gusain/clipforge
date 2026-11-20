@@ -15,7 +15,7 @@ import {
   Film,
 } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob } from '../../lib/format';
 import { useStudio } from '../StudioProvider';
 
@@ -59,7 +59,7 @@ export function MergeVideosTool() {
         continue;
       }
       if (currentTotal + f.size > MAX_TOTAL_BYTES) {
-        setError('Combined clip size exceeds 450 MB browser limit. Try shorter clips.');
+        setError('Combined video size exceeds 450 MB. Browser WebAssembly memory safely merges clips up to 450 MB combined locally without cloud uploads.');
         break;
       }
       currentTotal += f.size;
@@ -89,8 +89,10 @@ export function MergeVideosTool() {
     setOutputBlob(null);
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     runIdRef.current += 1;
+    await terminateFFmpeg();
+    clearFFmpegProgress();
     processingRef.current = false;
     setProcessing(false);
     setProgress(0);
@@ -98,6 +100,17 @@ export function MergeVideosTool() {
     setClips([]);
     setOutputBlob(null);
     setError('');
+  };
+
+  const handleCancel = async () => {
+    runIdRef.current += 1;
+    await terminateFFmpeg();
+    clearFFmpegProgress();
+    processingRef.current = false;
+    setProcessing(false);
+    setProgress(0);
+    setStatus('');
+    setError('Video merging cancelled. Memory freed.');
   };
 
   const handleMerge = async () => {
@@ -317,14 +330,24 @@ export function MergeVideosTool() {
             ))}
           </div>
 
+          {/* Progress Bar with Cancel Button */}
           {processing && (
-            <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2">
+            <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2.5">
               <div className="flex items-center justify-between text-xs font-bold text-blue-800">
                 <span className="inline-flex items-center gap-2">
                   <Loader2 size={14} className="animate-spin" />
                   <span>{status}</span>
                 </span>
-                <span className="font-mono">{progress}%</span>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono">{progress}%</span>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="rounded-lg bg-white border border-rose-200 hover:bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shadow-xs transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-blue-100">
                 <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />

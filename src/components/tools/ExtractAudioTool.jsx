@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Download, Loader2, RefreshCw, Music, VolumeX } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 
 const MAX_VIDEO_BYTES = 400 * 1024 * 1024; // 400 MB in-browser safety limit
@@ -62,11 +62,19 @@ export function ExtractAudioTool() {
       await ffmpeg.deleteFile(outName).catch(() => {});
     } catch (err) {
       console.error(err);
-      setError('Could not process this media file. Ensure the video contains a valid track.');
+      setError('Could not process this media file or operation was cancelled.');
     } finally {
       clearFFmpegProgress();
       setProcessing(false);
     }
+  };
+
+  const handleCancel = async () => {
+    await terminateFFmpeg();
+    clearFFmpegProgress();
+    setProcessing(false);
+    setProgress(0);
+    setError('Audio extraction cancelled. Memory freed.');
   };
 
   if (!file) {
@@ -82,7 +90,7 @@ export function ExtractAudioTool() {
             return;
           }
           if (f.size > MAX_VIDEO_BYTES) {
-            setError('This file exceeds 400 MB. Trim or shorten it first so your browser tab stays responsive.');
+            setError('This file exceeds 400 MB. Browser WebAssembly memory safely extracts audio up to 400 MB locally without cloud uploads. Please select a smaller file.');
             return;
           }
           setFile(f);
@@ -155,6 +163,34 @@ export function ExtractAudioTool() {
         </div>
       )}
 
+      {/* Progress Bar with Cancel Button */}
+      {processing && (
+        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between text-xs font-bold text-blue-800">
+            <span className="inline-flex items-center gap-2">
+              <Loader2 size={14} className="animate-spin" />
+              <span>Processing media stream...</span>
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{progress}%</span>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="rounded-lg bg-white border border-rose-200 hover:bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shadow-xs transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-blue-100">
+            <div
+              className="h-full bg-blue-600 transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           type="button"
@@ -165,7 +201,7 @@ export function ExtractAudioTool() {
           {processing && <Loader2 size={15} className="animate-spin" />}
           <span>
             {processing
-              ? `Processing (${progress}%)...`
+              ? 'Processing...'
               : action === 'mute'
                 ? 'Strip Audio from Video'
                 : `Extract ${action.toUpperCase()} Audio`}

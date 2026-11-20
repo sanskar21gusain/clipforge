@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Loader2, RefreshCw, Minimize2, CheckCircle2 } from 'lucide-react';
 import { Dropzone } from '../Dropzone';
-import { getFFmpeg, clearFFmpegProgress, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
+import { getFFmpeg, clearFFmpegProgress, terminateFFmpeg, getAdaptiveFramerateArgs, fileToUint8Array, uint8ToBlob } from '../../lib/ffmpegClient';
 import { formatBytes, downloadBlob, baseName } from '../../lib/format';
 import { useStudio } from '../StudioProvider';
 
@@ -57,7 +57,7 @@ export function CompressVideoTool() {
       return;
     }
     if (f.size > MAX_VIDEO_BYTES) {
-      setError('This file exceeds 400 MB. Trim or shorten it first so your browser tab stays responsive.');
+      setError('This file exceeds 400 MB. Browser WebAssembly memory safely compresses videos up to 400 MB locally without cloud uploads. Please select a smaller file.');
       return;
     }
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -79,13 +79,16 @@ export function CompressVideoTool() {
       const ffmpeg = await getFFmpeg((pct) => {
         setProgress(Math.max(10, pct));
       });
-      setStatus('Encoding video to target size...');
+      setStatus('Analyzing video framerate & container...');
 
       const ext = file.name.split('.').pop()?.toLowerCase() || 'mp4';
       const inputName = `input.${ext}`;
       const outputName = 'compressed.mp4';
 
       await ffmpeg.writeFile(inputName, await fileToUint8Array(file));
+
+      const rArgs = await getAdaptiveFramerateArgs(ffmpeg, inputName);
+      setStatus('Encoding video to target size...');
 
       const dur = Number.isFinite(duration) && duration > 0 ? Math.max(1, duration) : 15;
       const safeMb = Number.isFinite(targetMb) ? Math.min(500, Math.max(1, targetMb)) : 8;
@@ -96,7 +99,7 @@ export function CompressVideoTool() {
 
       const exitCode = await ffmpeg.exec([
         '-i', inputName,
-        '-r', '30',
+        ...rArgs,
         '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2',
         '-c:v', 'libx264',
         '-pix_fmt', 'yuv420p',
@@ -123,11 +126,19 @@ export function CompressVideoTool() {
       await ffmpeg.deleteFile(outputName).catch(() => {});
     } catch (err) {
       console.error(err);
-      setError('Compression failed in browser. Try a shorter MP4/WebM file under 250 MB.');
+      setError('Compression failed or was stopped. Try a shorter MP4/WebM file under 250 MB.');
     } finally {
       clearFFmpegProgress();
       setProcessing(false);
     }
+  };
+
+  const handleCancel = async () => {
+    await terminateFFmpeg();
+    setProcessing(false);
+    setProgress(0);
+    setStatus('');
+    setError('Compression cancelled. Memory freed.');
   };
 
   if (!file) {
@@ -234,15 +245,24 @@ export function CompressVideoTool() {
         )}
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Bar with Cancel Button */}
       {processing && (
-        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2">
+        <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 flex flex-col gap-2.5">
           <div className="flex items-center justify-between text-xs font-bold text-blue-800">
             <span className="inline-flex items-center gap-2">
               <Loader2 size={14} className="animate-spin" />
               <span>{status}</span>
             </span>
-            <span className="font-mono">{progress}%</span>
+            <div className="flex items-center gap-3">
+              <span className="font-mono">{progress}%</span>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="rounded-lg bg-white border border-rose-200 hover:bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shadow-xs transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-blue-100">
             <div
