@@ -21,6 +21,9 @@ const mono = JetBrains_Mono({
 
 export const metadata = {
   metadataBase: new URL('https://www.clipforge.cv'),
+  verification: {
+    google: 'EZOusdNXZXpXqo7y19MmO5OlDlYwBSuXEF1pIpr2MCI',
+  },
   title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
   description:
     'Private, zero-upload browser studio for AI background removal, video compression to exact MB, lossless trimming, MP4 to GIF, audio waveform videos, exact-KB image compression, and passport photos.',
