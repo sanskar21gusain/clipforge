@@ -4,7 +4,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, Check, Crown, ShieldCheck, KeyRound, ArrowRight, Sparkles } from 'lucide-react';
 
 const POLAR_ORG_ID = process.env.NEXT_PUBLIC_POLAR_ORG_ID || '';
-const POLAR_ANNUAL_PRODUCT_ID = process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID || '';
+const POLAR_LIFETIME_PRODUCT_ID =
+  process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID ||
+  process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID ||
+  '9870997d-92fe-42f7-b498-87c1c3a578c4';
+const POLAR_MONTHLY_PRODUCT_ID =
+  process.env.NEXT_PUBLIC_POLAR_MONTHLY_PRODUCT_ID ||
+  '4474150e-a1c0-40bd-bd25-aab18c13030d';
 
 export function ProModal({
   isOpen,
@@ -18,6 +24,7 @@ export function ProModal({
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
   const keyInputRef = useRef(null);
+  const [selectedPlan, setSelectedPlan] = useState('lifetime'); // 'lifetime' | 'monthly'
   const [showKeyForm, setShowKeyForm] = useState(false);
   const [licenseKey, setLicenseKey] = useState('');
   const [error, setError] = useState('');
@@ -85,12 +92,15 @@ export function ProModal({
   }, [onClose]);
 
   const handleCheckout = () => {
-    if (POLAR_ANNUAL_PRODUCT_ID) {
-      window.location.href = `/api/checkout?products=${encodeURIComponent(POLAR_ANNUAL_PRODUCT_ID)}`;
+    const targetProductId =
+      selectedPlan === 'monthly' ? POLAR_MONTHLY_PRODUCT_ID : POLAR_LIFETIME_PRODUCT_ID;
+
+    if (targetProductId) {
+      window.location.href = `/api/checkout?products=${encodeURIComponent(targetProductId)}`;
       return;
     }
     setShowKeyForm(true);
-    setError('Add NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID in .env to enable live checkout, or activate an Annual key below.');
+    setError('Configure product IDs in environment variables to enable live checkout, or activate a license key below.');
   };
 
   const handleVerifyKey = async (e) => {
@@ -159,14 +169,14 @@ export function ProModal({
 
         <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 font-mono">
           <Crown size={12} />
-          <span>CLIPFORGE PRO · ANNUAL PLAN</span>
+          <span>CLIPFORGE PRO · POWERED BY POLAR</span>
         </div>
 
         <h2 id="pro-modal-title" className="mt-2.5 text-2xl font-extrabold tracking-tight text-ink-900">
-          One simple yearly plan. Zero friction.
+          Unlock Unlimited Media Power
         </h2>
         <p className="mt-1 text-sm text-ink-500">
-          {reason || 'Unlock batch processing, 4K exports, and full studio tools across every browser—billed once per year.'}
+          {reason || 'Unlock batch processing, 4K exports, and full studio tools across every browser on your machine.'}
         </p>
       </div>
 
@@ -178,33 +188,66 @@ export function ProModal({
             data-testid="checkout-welcome-banner"
             className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-semibold text-emerald-800"
           >
-            Payment received! Check your Polar receipt email for your annual license key and paste it below.
+            Payment received! Check your Polar receipt email for your license key and paste it below.
           </div>
         )}
 
-        {/* Annual-Only Pricing Card */}
-        <div className="rounded-2xl border-2 border-blue-600/20 bg-blue-50/40 p-4 flex items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-700 font-mono">
-                Annual Subscription
+        {/* Plan Selection Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Lifetime Plan Card */}
+          <button
+            type="button"
+            onClick={() => setSelectedPlan('lifetime')}
+            className={`relative text-left rounded-2xl p-4 transition-all border-2 cursor-pointer ${
+              selectedPlan === 'lifetime'
+                ? 'border-blue-600 bg-blue-50/50 shadow-sm'
+                : 'border-canvas-300 bg-white hover:border-canvas-400'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-1 mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 font-mono">
+                Lifetime Pass
               </span>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                SAVE 25%
+                PAY ONCE
               </span>
             </div>
-            <div className="mt-1 flex items-baseline gap-2">
+            <div className="flex items-baseline gap-1.5">
               <span className="text-3xl font-black text-ink-900">$29</span>
-              <span className="text-sm font-medium text-ink-500">/ year</span>
-              <span className="text-xs font-mono text-ink-500 line-through">$39/yr</span>
+              <span className="text-xs font-medium text-ink-500">one-time</span>
+              <span className="text-xs font-mono text-ink-500 line-through">$59</span>
             </div>
-            <p className="mt-0.5 text-xs text-ink-500">
-              Just $2.42/month billed annually · Cancel anytime in 1 click
+            <p className="mt-1 text-xs text-ink-600 leading-snug">
+              Pay once, own forever. Free updates &amp; all future tools included.
             </p>
-          </div>
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-sm">
-            <Sparkles size={20} />
-          </div>
+          </button>
+
+          {/* Monthly Plan Card */}
+          <button
+            type="button"
+            onClick={() => setSelectedPlan('monthly')}
+            className={`relative text-left rounded-2xl p-4 transition-all border-2 cursor-pointer ${
+              selectedPlan === 'monthly'
+                ? 'border-blue-600 bg-blue-50/50 shadow-sm'
+                : 'border-canvas-300 bg-white hover:border-canvas-400'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-1 mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-600 font-mono">
+                Monthly Pass
+              </span>
+              <span className="rounded-full bg-canvas-200 px-2 py-0.5 text-[10px] font-semibold text-ink-600">
+                FLEXIBLE
+              </span>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-3xl font-black text-ink-900">$9</span>
+              <span className="text-xs font-medium text-ink-500">/ month</span>
+            </div>
+            <p className="mt-1 text-xs text-ink-600 leading-snug">
+              Flexible month-to-month access. Cancel anytime in 1 click.
+            </p>
+          </button>
         </div>
 
         {/* Pro Benefits */}
@@ -214,7 +257,7 @@ export function ProModal({
             'Full HD & 4K high-bitrate video compression, trimming & GIFs',
             'Clean watermark-free waveform audiogram videos (9:16, 1:1, 16:9)',
             '300 DPI printable 4×6 passport photo sheets for all countries',
-            'Account-less annual license key—activate on any browser',
+            'Instant Polar license key delivery to your email—activate on any browser',
           ].map((item) => (
             <li key={item} className="flex items-start gap-2.5">
               <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
@@ -234,7 +277,11 @@ export function ProModal({
               autoFocus
               className="w-full min-h-[46px] rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
-              <span>Subscribe Yearly — $29/year</span>
+              <span>
+                {selectedPlan === 'lifetime'
+                  ? 'Get Lifetime Pass — $29 (Pay Once)'
+                  : 'Subscribe Monthly — $9/month'}
+              </span>
               <ArrowRight size={16} />
             </button>
 
@@ -245,7 +292,7 @@ export function ProModal({
                 className="inline-flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium text-ink-500 hover:text-blue-600 transition-colors cursor-pointer"
               >
                 <KeyRound size={13} />
-                <span>Already have an annual license key? Activate here</span>
+                <span>Already have a Polar license key? Activate here</span>
               </button>
             ) : (
               <form
@@ -253,7 +300,7 @@ export function ProModal({
                 className="rounded-xl border border-canvas-300 bg-canvas-100 p-3.5 flex flex-col gap-2"
               >
                 <label htmlFor="clipforge-license-input" className="text-xs font-semibold text-ink-700">
-                  Enter Annual License Key
+                  Enter Polar License Key
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -282,7 +329,7 @@ export function ProModal({
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center flex flex-col items-center gap-1.5">
             <div className="flex items-center gap-1.5 text-sm font-bold text-emerald-800">
               <Crown size={15} />
-              <span>ClipForge Pro Annual is Active</span>
+              <span>ClipForge Pro is Active</span>
             </div>
             <p className="text-xs text-emerald-700">
               Every Pro tool, batch export, and high-resolution preset is unlocked in this browser.
@@ -306,7 +353,7 @@ export function ProModal({
             <span>100% On-Device Privacy</span>
           </span>
           <span>·</span>
-          <span>Billed Yearly · Cancel Anytime</span>
+          <span>Instant Polar Activation · Zero Cloud Uploads</span>
         </div>
       </div>
     </dialog>

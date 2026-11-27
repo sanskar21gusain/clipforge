@@ -13,8 +13,15 @@ export async function GET(request) {
     );
   }
 
-  const allowedProductId = process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID?.trim();
-  if (allowedProductId && products.some((id) => id !== allowedProductId)) {
+  const allowedProductIds = [
+    process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID?.trim(),
+    process.env.NEXT_PUBLIC_POLAR_MONTHLY_PRODUCT_ID?.trim(),
+    process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID?.trim(),
+    '9870997d-92fe-42f7-b498-87c1c3a578c4', // SnapCraft Pro Lifetime Pass ($29)
+    '4474150e-a1c0-40bd-bd25-aab18c13030d', // SnapCraft Pro Monthly ($9/mo)
+  ].filter(Boolean);
+
+  if (allowedProductIds.length > 0 && products.some((id) => !allowedProductIds.includes(id))) {
     return Response.json(
       { error: 'Invalid or unsupported product ID' },
       { status: 400 }
