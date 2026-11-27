@@ -21,6 +21,9 @@ const mono = JetBrains_Mono({
 
 export const metadata = {
   metadataBase: new URL('https://www.clipforge.cv'),
+  alternates: {
+    canonical: '/',
+  },
   verification: {
     google: 'EZOusdNXZXpXqo7y19MmO5OlDlYwBSuXEF1pIpr2MCI',
   },

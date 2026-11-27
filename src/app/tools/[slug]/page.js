@@ -16,6 +16,9 @@ export async function generateMetadata({ params }) {
   return {
     title: tool.seoTitle,
     description: tool.seoDescription,
+    alternates: {
+      canonical: `/tools/${tool.slug}`,
+    },
     openGraph: {
       title: tool.seoTitle,
       description: tool.seoDescription,
