@@ -14,10 +14,9 @@ export async function GET(request) {
   }
 
   const allowedProductIds = [
-    process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID?.trim(),
-    process.env.NEXT_PUBLIC_POLAR_MONTHLY_PRODUCT_ID?.trim(),
     process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID?.trim(),
-    '9870997d-92fe-42f7-b498-87c1c3a578c4', // SnapCraft Pro Lifetime Pass ($29)
+    process.env.NEXT_PUBLIC_POLAR_MONTHLY_PRODUCT_ID?.trim(),
+    'a2393fe7-0793-474b-9ab9-9f23b5486e2a', // ClipForge Pro Yearly ($29/yr)
     '4474150e-a1c0-40bd-bd25-aab18c13030d', // SnapCraft Pro Monthly ($9/mo)
   ].filter(Boolean);
 

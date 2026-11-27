@@ -6,8 +6,7 @@ import { X, Check, Crown, ShieldCheck, KeyRound, ArrowRight, Sparkles } from 'lu
 const POLAR_ORG_ID = process.env.NEXT_PUBLIC_POLAR_ORG_ID || '';
 const POLAR_ANNUAL_PRODUCT_ID =
   process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID ||
-  process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID ||
-  '9870997d-92fe-42f7-b498-87c1c3a578c4';
+  'a2393fe7-0793-474b-9ab9-9f23b5486e2a';
 const POLAR_MONTHLY_PRODUCT_ID =
   process.env.NEXT_PUBLIC_POLAR_MONTHLY_PRODUCT_ID ||
   '4474150e-a1c0-40bd-bd25-aab18c13030d';
