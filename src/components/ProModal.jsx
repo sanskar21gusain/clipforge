@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, Check, Crown, ShieldCheck, KeyRound, ArrowRight, Sparkles } from 'lucide-react';
 
 const POLAR_ORG_ID = process.env.NEXT_PUBLIC_POLAR_ORG_ID || '';
-const POLAR_LIFETIME_PRODUCT_ID =
-  process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID ||
+const POLAR_ANNUAL_PRODUCT_ID =
   process.env.NEXT_PUBLIC_POLAR_ANNUAL_PRODUCT_ID ||
+  process.env.NEXT_PUBLIC_POLAR_LIFETIME_PRODUCT_ID ||
   '9870997d-92fe-42f7-b498-87c1c3a578c4';
 const POLAR_MONTHLY_PRODUCT_ID =
   process.env.NEXT_PUBLIC_POLAR_MONTHLY_PRODUCT_ID ||
@@ -24,7 +24,7 @@ export function ProModal({
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
   const keyInputRef = useRef(null);
-  const [selectedPlan, setSelectedPlan] = useState('lifetime'); // 'lifetime' | 'monthly'
+  const [selectedPlan, setSelectedPlan] = useState('yearly'); // 'yearly' | 'monthly'
   const [showKeyForm, setShowKeyForm] = useState(false);
   const [licenseKey, setLicenseKey] = useState('');
   const [error, setError] = useState('');
@@ -93,7 +93,7 @@ export function ProModal({
 
   const handleCheckout = () => {
     const targetProductId =
-      selectedPlan === 'monthly' ? POLAR_MONTHLY_PRODUCT_ID : POLAR_LIFETIME_PRODUCT_ID;
+      selectedPlan === 'monthly' ? POLAR_MONTHLY_PRODUCT_ID : POLAR_ANNUAL_PRODUCT_ID;
 
     if (targetProductId) {
       window.location.href = `/api/checkout?products=${encodeURIComponent(targetProductId)}`;
@@ -194,31 +194,31 @@ export function ProModal({
 
         {/* Plan Selection Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Lifetime Plan Card */}
+          {/* Yearly Plan Card */}
           <button
             type="button"
-            onClick={() => setSelectedPlan('lifetime')}
+            onClick={() => setSelectedPlan('yearly')}
             className={`relative text-left rounded-2xl p-4 transition-all border-2 cursor-pointer ${
-              selectedPlan === 'lifetime'
+              selectedPlan === 'yearly'
                 ? 'border-blue-600 bg-blue-50/50 shadow-sm'
                 : 'border-canvas-300 bg-white hover:border-canvas-400'
             }`}
           >
             <div className="flex items-center justify-between gap-1 mb-1.5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 font-mono">
-                Lifetime Pass
+                Yearly Pass
               </span>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                PAY ONCE
+                SAVE 25%
               </span>
             </div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-3xl font-black text-ink-900">$29</span>
-              <span className="text-xs font-medium text-ink-500">one-time</span>
-              <span className="text-xs font-mono text-ink-500 line-through">$59</span>
+              <span className="text-xs font-medium text-ink-500">/ year</span>
+              <span className="text-xs font-mono text-ink-500 line-through">$39/yr</span>
             </div>
             <p className="mt-1 text-xs text-ink-600 leading-snug">
-              Pay once, own forever. Free updates &amp; all future tools included.
+              Just $2.42/month billed annually. Cancel anytime in 1 click.
             </p>
           </button>
 
@@ -278,8 +278,8 @@ export function ProModal({
               className="w-full min-h-[46px] rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
               <span>
-                {selectedPlan === 'lifetime'
-                  ? 'Get Lifetime Pass — $29 (Pay Once)'
+                {selectedPlan === 'yearly'
+                  ? 'Subscribe Yearly — $29/year'
                   : 'Subscribe Monthly — $9/month'}
               </span>
               <ArrowRight size={16} />
@@ -353,7 +353,7 @@ export function ProModal({
             <span>100% On-Device Privacy</span>
           </span>
           <span>·</span>
-          <span>Instant Polar Activation · Zero Cloud Uploads</span>
+          <span>Billed Yearly or Monthly · Cancel Anytime</span>
         </div>
       </div>
     </dialog>
