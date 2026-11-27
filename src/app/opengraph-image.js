@@ -132,7 +132,7 @@ export default function OpenGraphImage() {
           </div>
 
           <div style={{ fontSize: '20px', fontWeight: 700, color: '#334155' }}>
-            clipforge.vercel.app
+            clipforge.cv
           </div>
         </div>
       </div>

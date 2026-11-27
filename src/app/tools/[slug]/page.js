@@ -19,12 +19,12 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: tool.seoTitle,
       description: tool.seoDescription,
-      url: `https://clipforge.vercel.app/tools/${tool.slug}`,
+      url: `https://www.clipforge.cv/tools/${tool.slug}`,
       siteName: 'ClipForge',
       type: 'website',
       images: [
         {
-          url: 'https://clipforge.vercel.app/opengraph-image',
+          url: 'https://www.clipforge.cv/opengraph-image',
           width: 1200,
           height: 630,
           alt: tool.seoTitle,
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }) {
       card: 'summary_large_image',
       title: tool.seoTitle,
       description: tool.seoDescription,
-      images: ['https://clipforge.vercel.app/opengraph-image'],
+      images: ['https://www.clipforge.cv/opengraph-image'],
     },
   };
 }

@@ -20,7 +20,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://clipforge.vercel.app'),
+  metadataBase: new URL('https://www.clipforge.cv'),
   title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
   description:
     'Private, zero-upload browser studio for AI background removal, video compression to exact MB, lossless trimming, MP4 to GIF, audio waveform videos, exact-KB image compression, and passport photos.',
@@ -38,12 +38,12 @@ export const metadata = {
     title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
     description:
       'Private, zero-upload browser studio for AI background removal, exact-MB video compression, lossless trimming, MP4 to GIF, waveform audiograms, exact-KB image optimization, and passport photos.',
-    url: 'https://clipforge.vercel.app',
+    url: 'https://www.clipforge.cv',
     siteName: 'ClipForge',
     type: 'website',
     images: [
       {
-        url: 'https://clipforge.vercel.app/opengraph-image',
+        url: 'https://www.clipforge.cv/opengraph-image',
         width: 1200,
         height: 630,
         alt: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
@@ -55,7 +55,7 @@ export const metadata = {
     title: 'ClipForge — Free On-Device Video, Audio & Photo Studio',
     description:
       'Remove photo backgrounds with local AI, compress videos to exact MB, trim clips losslessly, and build 4x6 passport sheets right in your browser.',
-    images: ['https://clipforge.vercel.app/opengraph-image'],
+    images: ['https://www.clipforge.cv/opengraph-image'],
   },
   robots: { index: true, follow: true },
   icons: { icon: '/favicon.svg' },
