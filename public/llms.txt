@@ -3,27 +3,27 @@
 > ClipForge is a bright, privacy-first browser media studio that runs video, audio, and photo tools locally inside the browser. No file uploads, no mandatory sign-up.
 
 ## Studio Directory
-- [ClipForge Home — All 14 Browser Media Tools](https://clipforge.vercel.app/): Browse and search all video, audio, and photo tools.
+- [ClipForge Home — All 14 Browser Media Tools](https://www.clipforge.cv/): Browse and search all video, audio, and photo tools.
 
 ## Video Tools
-- [Compress Video to Size](https://clipforge.vercel.app/tools/compress-video): Shrink MP4, MOV, or WebM videos to exact MB targets (8MB Discord, 16MB WhatsApp, 25MB Email, Custom MB) locally in your browser.
-- [Video Trimmer & Cutter](https://clipforge.vercel.app/tools/trim-video): Instant lossless stream-copy or frame-accurate H.264 video cutting right in your browser.
-- [MP4 to Animated GIF](https://clipforge.vercel.app/tools/mp4-to-gif): Two-pass custom color palette GIF conversion with custom FPS and width.
-- [MOV & WebM to MP4 Converter](https://clipforge.vercel.app/tools/video-converter): Convert MOV, WebM, and MKV clips to universal H.264 MP4 with 9:16, 1:1, and 16:9 social presets.
-- [Video Frame & Thumbnail Extractor](https://clipforge.vercel.app/tools/video-frames): Scrub to exact timestamps and capture full-resolution PNG frames or batch extract frames every N seconds as ZIP.
-- [Merge & Join Videos](https://clipforge.vercel.app/tools/merge-videos): Stitch multiple MP4, MOV, or WebM clips into one normalized MP4—free for 2 clips, unlimited with Pro Annual.
-- [Video Speed & Reverse](https://clipforge.vercel.app/tools/video-speed): Speed up videos (2x–4x timelapse), slow down (0.25x–0.5x slow-motion), or reverse video and audio locally.
+- [Compress Video to Size](https://www.clipforge.cv/tools/compress-video): Shrink MP4, MOV, or WebM videos to exact MB targets (8MB Discord, 16MB WhatsApp, 25MB Email, Custom MB) locally in your browser.
+- [Video Trimmer & Cutter](https://www.clipforge.cv/tools/trim-video): Instant lossless stream-copy or frame-accurate H.264 video cutting right in your browser.
+- [MP4 to Animated GIF](https://www.clipforge.cv/tools/mp4-to-gif): Two-pass custom color palette GIF conversion with custom FPS and width.
+- [MOV & WebM to MP4 Converter](https://www.clipforge.cv/tools/video-converter): Convert MOV, WebM, and MKV clips to universal H.264 MP4 with 9:16, 1:1, and 16:9 social presets.
+- [Video Frame & Thumbnail Extractor](https://www.clipforge.cv/tools/video-frames): Scrub to exact timestamps and capture full-resolution PNG frames or batch extract frames every N seconds as ZIP.
+- [Merge & Join Videos](https://www.clipforge.cv/tools/merge-videos): Stitch multiple MP4, MOV, or WebM clips into one normalized MP4—free for 2 clips, unlimited with Pro Annual.
+- [Video Speed & Reverse](https://www.clipforge.cv/tools/video-speed): Speed up videos (2x–4x timelapse), slow down (0.25x–0.5x slow-motion), or reverse video and audio locally.
 
 ## Audio Tools
-- [Extract or Mute Audio](https://clipforge.vercel.app/tools/extract-audio): Extract 192 kbps MP3 or lossless WAV audio from video, or strip audio losslessly.
-- [Audio Cutter & Volume Booster](https://clipforge.vercel.app/tools/audio-cutter): Live waveform scrubber, smooth fade-in/out, volume boost up to 300%, MP3/WAV export.
-- [Audio to Waveform Video](https://clipforge.vercel.app/tools/audio-to-video): Animated audiogram video generator for Reels (9:16), Square (1:1), and Landscape (16:9).
+- [Extract or Mute Audio](https://www.clipforge.cv/tools/extract-audio): Extract 192 kbps MP3 or lossless WAV audio from video, or strip audio losslessly.
+- [Audio Cutter & Volume Booster](https://www.clipforge.cv/tools/audio-cutter): Live waveform scrubber, smooth fade-in/out, volume boost up to 300%, MP3/WAV export.
+- [Audio to Waveform Video](https://www.clipforge.cv/tools/audio-to-video): Animated audiogram video generator for Reels (9:16), Square (1:1), and Landscape (16:9).
 
 ## Photo Tools
-- [AI Background Remover](https://clipforge.vercel.app/tools/background-remover): On-device neural background removal with transparent PNG and studio backdrop export.
-- [Image Studio & Compress to KB](https://clipforge.vercel.app/tools/image-studio): Batch JPG/PNG/WebP conversion, EXIF/GPS stripping, exact-KB binary search compression (50KB/100KB/200KB), and ZIP download.
-- [Passport & ID Photo Maker](https://clipforge.vercel.app/tools/passport-photo): Official India/UK/EU, US, and Canada 300 DPI sizing with face alignment guide and 4x6 printable sheet.
-- [Blur & Redact Photo](https://clipforge.vercel.app/tools/blur-redact): Irreversible Canvas blur, pixelate, and solid black-box redaction with automatic EXIF/GPS metadata stripping.
+- [AI Background Remover](https://www.clipforge.cv/tools/background-remover): On-device neural background removal with transparent PNG and studio backdrop export.
+- [Image Studio & Compress to KB](https://www.clipforge.cv/tools/image-studio): Batch JPG/PNG/WebP conversion, EXIF/GPS stripping, exact-KB binary search compression (50KB/100KB/200KB), and ZIP download.
+- [Passport & ID Photo Maker](https://www.clipforge.cv/tools/passport-photo): Official India/UK/EU, US, and Canada 300 DPI sizing with face alignment guide and 4x6 printable sheet.
+- [Blur & Redact Photo](https://www.clipforge.cv/tools/blur-redact): Irreversible Canvas blur, pixelate, and solid black-box redaction with automatic EXIF/GPS metadata stripping.
 
 ## Pricing
 - Free Tier: Free on-device processing with zero cloud uploads.

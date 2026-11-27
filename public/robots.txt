@@ -13,4 +13,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://clipforge.vercel.app/sitemap.xml
+Sitemap: https://www.clipforge.cv/sitemap.xml
